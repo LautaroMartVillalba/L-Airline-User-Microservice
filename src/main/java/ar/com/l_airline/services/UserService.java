@@ -4,11 +4,13 @@ import ar.com.l_airline.entities.user.User;
 import ar.com.l_airline.entities.user.UserDTO;
 import ar.com.l_airline.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class UserService {
 
     @Autowired
@@ -21,7 +23,11 @@ public class UserService {
         }
         User user = User.builder().email(userDto.getEmail())
                                         .name(userDto.getName())
-                                        .password(userDto.getPassword()).build();
+                                        .password(userDto.getPassword())
+                                        .isEnabled(userDto.isEnabled())
+                                        .accountNoExpired(userDto.isAccountNoExpired())
+                                        .accountNoLocked(userDto.isAccountNoLocked())
+                                        .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
         return user;
     }
@@ -50,5 +56,12 @@ public class UserService {
             return repository.findByNameContaining(name);
         }
         return new ArrayList<>();
+    }
+
+    public Optional<User> findUserByEmail(String email){
+        if(!email.isBlank() && email.contains("@")){
+            return repository.findByEmail(email);
+        }
+        return Optional.empty();
     }
 }

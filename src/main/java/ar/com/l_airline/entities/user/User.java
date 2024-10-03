@@ -20,4 +20,10 @@ public class User {
     private String name;
     @Column(nullable = false)
     private String password;
+    private Roles role;
+
+    private boolean isEnabled;
+    private boolean accountNoExpired;
+    private boolean accountNoLocked;
+    private boolean credentialsNoExpired;
 }
