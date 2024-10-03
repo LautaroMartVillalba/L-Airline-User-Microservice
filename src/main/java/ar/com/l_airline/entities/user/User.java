@@ -20,6 +20,7 @@ public class User {
     private String name;
     @Column(nullable = false)
     private String password;
+    @Enumerated(EnumType.STRING)
     private Roles role;
 
     private boolean isEnabled;

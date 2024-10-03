@@ -4,6 +4,7 @@ import ar.com.l_airline.entities.user.User;
 import ar.com.l_airline.entities.user.UserDTO;
 import ar.com.l_airline.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,19 +16,22 @@ public class UserService {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private PasswordEncoder encoder;
 
     public User createUser(UserDTO userDto){
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
-        if (dbUser.isEmpty() && userDto.getPassword().length() < 8){
+        if (!dbUser.isEmpty() && userDto.getPassword().length() < 8){
             return null; //TODO throw exception
         }
         User user = User.builder().email(userDto.getEmail())
-                                        .name(userDto.getName())
-                                        .password(userDto.getPassword())
-                                        .isEnabled(userDto.isEnabled())
-                                        .accountNoExpired(userDto.isAccountNoExpired())
-                                        .accountNoLocked(userDto.isAccountNoLocked())
-                                        .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
+                                  .name(userDto.getName())
+                                  .password(encoder.encode(userDto.getPassword()))
+                                  .role(userDto.getRole())
+                                  .isEnabled(userDto.isEnabled())
+                                  .accountNoExpired(userDto.isAccountNoExpired())
+                                  .accountNoLocked(userDto.isAccountNoLocked())
+                                  .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
         return user;
     }
