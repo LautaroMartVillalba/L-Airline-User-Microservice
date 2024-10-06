@@ -1,6 +1,6 @@
 package ar.com.l_airline.entities.hotel;
 
-import ar.com.l_airline.entities.hotel.enums.City;
+import ar.com.l_airline.ubications.City;
 import ar.com.l_airline.entities.hotel.enums.Room;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -2,7 +2,7 @@ package ar.com.l_airline.services;
 
 import ar.com.l_airline.entities.hotel.Hotel;
 import ar.com.l_airline.entities.hotel.HotelDTO;
-import ar.com.l_airline.entities.hotel.enums.City;
+import ar.com.l_airline.ubications.City;
 import ar.com.l_airline.entities.hotel.enums.Room;
 import ar.com.l_airline.repositories.HotelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
