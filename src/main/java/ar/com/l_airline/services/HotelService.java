@@ -1,5 +1,7 @@
 package ar.com.l_airline.services;
 
+import ar.com.l_airline.entities.flight.Flight;
+import ar.com.l_airline.entities.flight.FlightDTO;
 import ar.com.l_airline.entities.hotel.Hotel;
 import ar.com.l_airline.entities.hotel.HotelDTO;
 import ar.com.l_airline.ubications.City;
@@ -8,6 +10,7 @@ import ar.com.l_airline.repositories.HotelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +19,16 @@ public class HotelService {
 
     @Autowired
     private HotelRepository repository;
+
+    private boolean validateHotel(HotelDTO dto){
+        if(dto.getName().isBlank()
+        || dto.getRoomType().name().isBlank()
+        || dto.getCity().name().isBlank()
+        || dto.getPricePerNight() <= 0){
+            return false;
+        }
+        return true;
+    }
 
     public Hotel createHotel (HotelDTO dto){
         Optional<Hotel> dbHotel = repository.findByNameAndCityAndRoomType(dto.getName(),
@@ -72,4 +85,14 @@ public class HotelService {
         return repository.findByPricePerNightBetween(min, max);
     }
 
+    public Hotel updateFlight (Long id, HotelDTO dto){
+        Optional<Hotel> findHotel = this.findHotelById(id);
+        if (!validateHotel(dto) || findHotel.isEmpty()){
+            return null;
+        }
+        Hotel hotelFound = findHotel.get();
+
+        repository.save(hotelFound);
+        return  hotelFound;
+    }
 }

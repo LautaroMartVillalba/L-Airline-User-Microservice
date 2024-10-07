@@ -20,11 +20,14 @@ public class FlightService {
     private FlightRepository repository;
 
     public boolean validateFlight(FlightDTO dto){
-        return !dto.getAirLine().name().isBlank()
-                && !dto.getOrigin().name().isBlank()
-                && !dto.getDestiny().name().isBlank()
-                && !dto.getFlightSchedule().isBefore(LocalDateTime.now())
-                &&  dto.getLayover() <= 3 && dto.getLayover() >= 0;
+        if(dto.getAirLine().name().isBlank()
+        || dto.getOrigin().name().isBlank()
+        || dto.getDestiny().name().isBlank()
+        || dto.getFlightSchedule().isBefore(LocalDateTime.now())
+        || dto.getLayover() <= 3 && dto.getLayover() >= 0){
+            return false;
+        }
+        return true;
     }
 
     public Optional<Flight> findFlightById(Long id){
@@ -87,11 +90,21 @@ public class FlightService {
         return repository.findByFlightSchedule(schedule);
     }
 
-    List<Flight> findByPriceBetween (double min, double max){
+    public List<Flight> findByPriceBetween (double min, double max){
         if (min < 0 || max < min){
             return null;
         }
         return repository.findByPriceBetween(min, max);
     }
 
+    public Flight updateFlight (Long id, FlightDTO dto){
+        Optional<Flight> findFlight = this.findFlightById(id);
+        if (!validateFlight(dto) || findFlight.isEmpty()){
+            return null;
+        }
+        Flight flightFound = findFlight.get();
+
+        repository.save(flightFound);
+        return  flightFound;
+    }
 }

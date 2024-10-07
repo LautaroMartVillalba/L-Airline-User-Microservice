@@ -1,5 +1,7 @@
 package ar.com.l_airline.services;
 
+import ar.com.l_airline.entities.hotel.Hotel;
+import ar.com.l_airline.entities.hotel.HotelDTO;
 import ar.com.l_airline.entities.user.User;
 import ar.com.l_airline.entities.user.UserDTO;
 import ar.com.l_airline.repositories.UserRepository;
@@ -19,9 +21,16 @@ public class UserService {
     @Autowired
     private PasswordEncoder encoder;
 
+    private boolean validateUser(UserDTO dto){
+        if (dto.getName().isBlank() || dto.getRole().name().isBlank() || dto.getEmail().isBlank() || dto.getPassword().isBlank() || dto.getPassword().length() < 8){
+            return false;
+        }
+        return true;
+    }
+
     public User createUser(UserDTO userDto){
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
-        if (!dbUser.isEmpty() && userDto.getPassword().length() < 8){
+        if (dbUser.isPresent() && userDto.getPassword().length() < 8){
             return null; //TODO throw exception
         }
         User user = User.builder().email(userDto.getEmail())
@@ -34,6 +43,13 @@ public class UserService {
                                   .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
         return user;
+    }
+
+    public Optional<User> findUserById(Long id){
+        if (id == null){
+            return Optional.empty();
+        }
+        return repository.findById(id);
     }
 
     public boolean deleteUserById(Long id){
@@ -67,5 +83,16 @@ public class UserService {
             return repository.findByEmail(email);
         }
         return Optional.empty();
+    }
+
+    public User updateFlight (Long id, UserDTO dto){
+        Optional<User> findUser = this.findUserById(id);
+        if (!validateUser(dto) || findUser.isEmpty()){
+            return null;
+        }
+        User userFound = findUser.get();
+
+        repository.save(userFound);
+        return  userFound;
     }
 }
