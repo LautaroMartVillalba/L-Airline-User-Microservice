@@ -86,13 +86,22 @@ public class HotelService {
     }
 
     public Hotel updateFlight (Long id, HotelDTO dto){
-        Optional<Hotel> findHotel = this.findHotelById(id);
-        if (!validateHotel(dto) || findHotel.isEmpty()){
-            return null;
-        }
-        Hotel hotelFound = findHotel.get();
+        Hotel findHotel = this.findHotelById(id).orElseThrow(() -> new RuntimeException("Hotel not found."));
 
-        repository.save(hotelFound);
-        return  hotelFound;
+        if (dto.getName() != null){
+            findHotel.setName(dto.getName());
+        }
+        if (dto.getCity() != null){
+            findHotel.setCity(dto.getCity());
+        }
+        if (dto.getRoomType() != null){
+            findHotel.setRoomType(dto.getRoomType());
+        }
+        if (dto.getPricePerNight() <= 0){
+            findHotel.setPricePerNight(dto.getPricePerNight());
+        }
+
+        repository.save(findHotel);
+        return  findHotel;
     }
 }

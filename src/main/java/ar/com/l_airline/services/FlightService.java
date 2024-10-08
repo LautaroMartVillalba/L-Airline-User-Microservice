@@ -97,14 +97,29 @@ public class FlightService {
         return repository.findByPriceBetween(min, max);
     }
 
-    public Flight updateFlight (Long id, FlightDTO dto){
-        Optional<Flight> findFlight = this.findFlightById(id);
-        if (!validateFlight(dto) || findFlight.isEmpty()){
-            return null;
-        }
-        Flight flightFound = findFlight.get();
+    public Flight updateFlight (Long id, FlightDTO dto) {
+        Flight findFlight = this.findFlightById(id).orElseThrow(() -> new RuntimeException("Flight not found."));
 
-        repository.save(flightFound);
-        return  flightFound;
+        if (dto.getAirLine() != null){
+            findFlight.setAirLine(dto.getAirLine());
+        }
+        if (dto.getOrigin() != null){
+            findFlight.setOrigin(dto.getOrigin());
+        }
+        if (dto.getDestiny() != null){
+            findFlight.setDestiny(dto.getDestiny());
+        }
+        if (dto.getFlightSchedule() != null) {
+            findFlight.setFlightSchedule(dto.getFlightSchedule());
+        }
+        if (dto.getLayover() < 0){
+            findFlight.setLayover(dto.getLayover());
+        }
+        if (dto.getPrice() <= 0){
+            findFlight.setPrice(dto.getPrice());
+        }
+
+        repository.save(findFlight);
+        return  findFlight;
     }
 }

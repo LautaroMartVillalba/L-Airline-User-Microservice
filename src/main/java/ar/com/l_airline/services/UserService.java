@@ -85,14 +85,23 @@ public class UserService {
         return Optional.empty();
     }
 
-    public User updateFlight (Long id, UserDTO dto){
-        Optional<User> findUser = this.findUserById(id);
-        if (!validateUser(dto) || findUser.isEmpty()){
-            return null;
-        }
-        User userFound = findUser.get();
+    public User updateUser (Long id, UserDTO dto){
+        User findUser = repository.findById(id).orElseThrow(()-> new RuntimeException("User not found."));
 
-        repository.save(userFound);
-        return  userFound;
+        if (dto.getName() != null){
+            findUser.setName(dto.getName());
+        }
+        if (dto.getEmail() != null){
+            findUser.setEmail(dto.getEmail());
+        }
+        if (dto.getPassword() != null){
+            findUser.setPassword(dto.getPassword());
+        }
+        if (dto.getRole() != null){
+            findUser.setRole(dto.getRole());
+        }
+
+        repository.save(findUser);
+        return findUser;
     }
 }
