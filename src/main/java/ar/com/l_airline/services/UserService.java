@@ -30,7 +30,7 @@ public class UserService {
 
     public User createUser(UserDTO userDto){
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
-        if (dbUser.isPresent() && userDto.getPassword().length() < 8){
+        if (dbUser.isPresent() || userDto.getPassword().length() < 8){
             return null; //TODO throw exception
         }
         User user = User.builder().email(userDto.getEmail())
