@@ -16,12 +16,12 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/hotel")
-@PreAuthorize("permitAll()")
 public class HotelController {
 
     @Autowired
     private HotelService service;
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<Hotel> createHotel(@RequestBody HotelDTO dto){
         Hotel result = service.createHotel(dto);
@@ -33,6 +33,7 @@ public class HotelController {
     }
 
     @GetMapping("/byId/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<Optional<Hotel>> getById(@PathVariable Long id){
         Optional<Hotel> result = service.findHotelById(id);
         if (result.isEmpty()){
@@ -42,6 +43,7 @@ public class HotelController {
     }
 
     @GetMapping("/byName/{name}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<Hotel>> getByName(@PathVariable String name){
         List<Hotel> result = service.findHotelByName(name);
         if (result.isEmpty()){
@@ -51,6 +53,7 @@ public class HotelController {
     }
 
     @GetMapping("/byCity/{city}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<Hotel>> findByCity(@PathVariable City city){
         List<Hotel> result = service.findHotelByCity(city);
         if (result.isEmpty()){
@@ -60,6 +63,7 @@ public class HotelController {
     }
 
     @GetMapping("/byRoom/{room}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<Hotel>> findByRoom(@PathVariable Room room){
         List<Hotel> result = service.findHotelByRoom(room);
         if (result.isEmpty()){
@@ -69,6 +73,7 @@ public class HotelController {
     }
 
     @GetMapping("/byPrice/{min}/{max}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<Hotel>> findByPrice(@PathVariable double min, @PathVariable double max){
         List<Hotel> result = service.findHotelByPrice(min, max);
         if (result.isEmpty()){
@@ -78,6 +83,7 @@ public class HotelController {
     }
 
     @PatchMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Hotel> updateHotel (@PathVariable Long id, @RequestBody HotelDTO dto){
         Hotel updatedHotel = service.updateHotel(id, dto);
 
@@ -85,6 +91,7 @@ public class HotelController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteHotel(@PathVariable Long id){
         boolean result = service.deleteHotelById(id);
         if (!result){
