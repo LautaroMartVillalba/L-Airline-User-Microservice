@@ -1,6 +1,7 @@
 package ar.com.l_airline.controllers;
 
 import ar.com.l_airline.entities.user.User;
+import ar.com.l_airline.entities.user.UserDAO;
 import ar.com.l_airline.entities.user.UserDTO;
 import ar.com.l_airline.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class UserController {
 
     @GetMapping("/byId")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Optional<User>> findByID(@RequestParam Long id){
-        Optional<User> result = service.findUserById(id);
+    public ResponseEntity<Optional<UserDAO>> findByID(@RequestParam Long id){
+        Optional<UserDAO> result = service.findUserById(id);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -32,8 +33,8 @@ public class UserController {
 
     @GetMapping("/byEmail")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<User>> findByEmailContaining(@RequestParam String email){
-        List<User> result = service.findUserByEmailContaining(email);
+    public ResponseEntity<List<UserDAO>> findByEmailContaining(@RequestParam String email){
+        List<UserDAO> result = service.findUserByEmailContaining(email);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -42,8 +43,8 @@ public class UserController {
 
     @GetMapping("/byName")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<User>> findByName(@RequestParam String name){
-        List<User> result = service.fundUserByName(name);
+    public ResponseEntity<List<UserDAO>> findByName(@RequestParam String name){
+        List<UserDAO> result = service.fundUserByName(name);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -52,9 +53,9 @@ public class UserController {
 
     @PostMapping("/insert")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<User> insertUser(@RequestBody UserDTO dto){
-        service.createUser(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserDAO> insertUser(@RequestBody UserDTO dto){
+        UserDAO result = service.createUser(dto);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete")

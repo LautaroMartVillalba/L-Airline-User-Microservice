@@ -5,7 +5,6 @@ import ar.com.l_airline.entities.flight.Flight;
 import ar.com.l_airline.entities.flight.FlightDTO;
 import ar.com.l_airline.repositories.FlightRepository;
 import ar.com.l_airline.ubications.City;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,18 +15,18 @@ import java.util.Optional;
 @Service
 public class FlightService {
 
-    @Autowired
-    private FlightRepository repository;
+    private final FlightRepository repository;
+
+    public FlightService(FlightRepository repository) {
+        this.repository = repository;
+    }
 
     public boolean validateFlight(FlightDTO dto){
-        if(dto.getAirLine().name().isBlank()
-        || dto.getOrigin().name().isBlank()
-        || dto.getDestiny().name().isBlank()
-        || dto.getFlightSchedule().isBefore(LocalDateTime.now())
-        || dto.getLayover() < 0){
-            return false;
-        }
-        return true;
+        return !dto.getAirLine().name().isBlank()
+                && !dto.getOrigin().name().isBlank()
+                && !dto.getDestiny().name().isBlank()
+                && !dto.getFlightSchedule().isBefore(LocalDateTime.now())
+                && dto.getLayover() >= 0;
     }
 
     public Optional<Flight> findFlightById(Long id){
@@ -38,12 +37,9 @@ public class FlightService {
     }
 
     public Flight createFlight(FlightDTO dto){
-        System.out.println(dto);
         if (!validateFlight(dto)){
-            System.out.println("malardo, pa \n");
             return null;
         }
-        System.out.println("pedilobich \n");
         Flight flight = Flight.builder().airLine(dto.getAirLine())
                                         .origin(dto.getOrigin())
                                         .destiny(dto.getDestiny())

@@ -1,11 +1,9 @@
 package ar.com.l_airline.services;
 
-import ar.com.l_airline.entities.hotel.Hotel;
-import ar.com.l_airline.entities.hotel.HotelDTO;
 import ar.com.l_airline.entities.user.User;
+import ar.com.l_airline.entities.user.UserDAO;
 import ar.com.l_airline.entities.user.UserDTO;
 import ar.com.l_airline.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +14,21 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository repository;
-    @Autowired
-    private PasswordEncoder encoder;
+    private final UserRepository repository;
+    private final PasswordEncoder encoder;
 
-    private boolean validateUser(UserDTO dto){
-        if (dto.getName().isBlank() || dto.getRole().name().isBlank() || dto.getEmail().isBlank() || dto.getPassword().isBlank() || dto.getPassword().length() < 8){
-            return false;
-        }
-        return true;
+    public UserService(UserRepository repository, PasswordEncoder encoder) {
+        this.repository = repository;
+        this.encoder = encoder;
     }
 
-    public User createUser(UserDTO userDto){
+    private boolean validateUser(UserDTO dto){
+        return !dto.getName().isBlank() && !dto.getRole().name().isBlank() && !dto.getEmail().isBlank() && !dto.getPassword().isBlank() && dto.getPassword().length() >= 8;
+    }
+
+    public UserDAO createUser(UserDTO userDto){
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
-        if (dbUser.isPresent() || userDto.getPassword().length() < 8){
+        if (dbUser.isPresent() || userDto.getPassword().length() < 8 || !validateUser(userDto)){
             return null; //TODO throw exception
         }
         User user = User.builder().email(userDto.getEmail())
@@ -42,14 +40,24 @@ public class UserService {
                                   .accountNoLocked(userDto.isAccountNoLocked())
                                   .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
-        return user;
+
+        return UserDAO.builder()
+                      .name(userDto.getName())
+                      .email(userDto.getEmail())
+                      .role(userDto.getRole()).build();
     }
 
-    public Optional<User> findUserById(Long id){
+    public Optional<UserDAO> findUserById(Long id){
         if (id == null){
             return Optional.empty();
         }
-        return repository.findById(id);
+        User result = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found."));
+
+        return Optional.ofNullable(UserDAO.builder()
+                .id(result.getId())
+                .name(result.getName())
+                .email(result.getEmail())
+                .role(result.getRole()).build());
     }
 
     public boolean deleteUserById(Long id){
@@ -64,16 +72,34 @@ public class UserService {
     }
 
     //TODO implement pagination for each GET method
-    public List<User> findUserByEmailContaining(String email){
-        if (!email.isEmpty() || email.contains("@gmail.com")){
-            return repository.findByEmailContaining(email);
+    public List<UserDAO> findUserByEmailContaining(String email){
+        if (!email.isBlank() && email.contains("@")){
+            List<User> result =  repository.findByEmailContaining(email);
+
+            List<UserDAO> daoTransfer = new ArrayList<>();
+            result.forEach(user -> daoTransfer.add(UserDAO.builder()
+                                                          .id(user.getId())
+                                                          .name(user.getName())
+                                                          .email(user.getEmail())
+                                                          .role(user.getRole()).build()));
+
+            return daoTransfer;
         }
         return new ArrayList<>();
     }
 
-    public List<User> fundUserByName(String name){
+    public List<UserDAO> fundUserByName(String name){
         if (!name.isEmpty() || !name.isBlank()){
-            return repository.findByNameContaining(name);
+            List<User> result = repository.findByNameContaining(name);
+
+            List<UserDAO> daoTransfer = new ArrayList<>();
+            result.forEach(user -> daoTransfer.add(UserDAO.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .role(user.getRole()).build()));
+
+            return daoTransfer;
         }
         return new ArrayList<>();
     }
