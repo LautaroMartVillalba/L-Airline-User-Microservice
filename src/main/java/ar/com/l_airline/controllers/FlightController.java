@@ -5,26 +5,25 @@ import ar.com.l_airline.entities.flight.Flight;
 import ar.com.l_airline.entities.flight.FlightDTO;
 import ar.com.l_airline.services.FlightService;
 import ar.com.l_airline.ubications.City;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/flight")
-//TODO refactor URL with @RequestParam
 public class FlightController {
 
-    @Autowired
-    private FlightService service;
+    private final FlightService service;
 
-    @GetMapping("/byId/{id}")
+    public FlightController(FlightService service) {
+        this.service = service;
+    }
+
+    @GetMapping("/byId")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Optional<Flight>> byId (@PathVariable Long id){
+    public ResponseEntity<Optional<Flight>> byId (@RequestParam Long id){
         Optional<Flight> result = service.findFlightById(id);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -32,9 +31,9 @@ public class FlightController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/byAirline/{airlineName}")
+    @GetMapping("/byAirline")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Flight>> getByAirLine(@PathVariable AirlineName airlineName){
+    public ResponseEntity<List<Flight>> getByAirLine(@RequestParam AirlineName airlineName){
         List<Flight> result = service.findByAirLine(airlineName);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -42,9 +41,9 @@ public class FlightController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/byOrigin/{origin}")
+    @GetMapping("/byOrigin")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Flight>> byOrigin (@PathVariable City origin){
+    public ResponseEntity<List<Flight>> byOrigin (@RequestParam City origin){
         List<Flight> result = service.findByOrigin(origin);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -52,9 +51,9 @@ public class FlightController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/byDestiny/{destiny}")
+    @GetMapping("/byDestiny")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Flight>> findByDestiny (@PathVariable City destiny){
+    public ResponseEntity<List<Flight>> findByDestiny (@RequestParam City destiny){
         List<Flight> result = service.findByDestiny(destiny);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -74,11 +73,11 @@ public class FlightController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/byPrice/{min}/{max}")
+    @GetMapping("/byPrice")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Flight>> byPrice (@PathVariable double min, @PathVariable double max){
+    public ResponseEntity<List<Flight>> byPrice (@RequestParam double min, @RequestParam double max){
         List<Flight> result = service.findByPriceBetween(min, max);
-        if (result.isEmpty() || result == null){
+        if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
@@ -94,9 +93,9 @@ public class FlightController {
         return ResponseEntity.ok(flight);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteHotel(@PathVariable Long id){
+    public ResponseEntity<String> deleteHotel(@RequestParam Long id){
         boolean result = service.deleteFlight(id);
         if (!result){
             return ResponseEntity.badRequest().build();
@@ -104,9 +103,9 @@ public class FlightController {
         return ResponseEntity.ok("¡Hotel removed!");
     }
 
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Flight> update(@PathVariable Long id, @RequestBody FlightDTO flight){
+    public ResponseEntity<Flight> update(@RequestParam Long id, @RequestBody FlightDTO flight){
         Flight result = service.updateFlight(id, flight);
         if (result == null){
             return ResponseEntity.badRequest().build();
