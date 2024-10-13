@@ -24,7 +24,7 @@ public class FlightService {
         || dto.getOrigin().name().isBlank()
         || dto.getDestiny().name().isBlank()
         || dto.getFlightSchedule().isBefore(LocalDateTime.now())
-        || dto.getLayover() <= 3 && dto.getLayover() >= 0){
+        || dto.getLayover() < 0){
             return false;
         }
         return true;
@@ -38,9 +38,12 @@ public class FlightService {
     }
 
     public Flight createFlight(FlightDTO dto){
+        System.out.println(dto);
         if (!validateFlight(dto)){
+            System.out.println("malardo, pa \n");
             return null;
         }
+        System.out.println("pedilobich \n");
         Flight flight = Flight.builder().airLine(dto.getAirLine())
                                         .origin(dto.getOrigin())
                                         .destiny(dto.getDestiny())
@@ -83,7 +86,8 @@ public class FlightService {
         return repository.findByDestiny(destiny);
     }
 
-    public List<Flight> findByFlightSchedule (LocalDateTime schedule){
+    public List<Flight> findByFlightSchedule (int year, int month, int day, int hour, int minutes){
+        LocalDateTime schedule = LocalDateTime.of(year, month,day, hour, minutes);
         if (schedule.isBefore(LocalDateTime.now())){
             return null;
         }
@@ -92,7 +96,7 @@ public class FlightService {
 
     public List<Flight> findByPriceBetween (double min, double max){
         if (min < 0 || max < min){
-            return null;
+            return null; //TODO exception handler
         }
         return repository.findByPriceBetween(min, max);
     }

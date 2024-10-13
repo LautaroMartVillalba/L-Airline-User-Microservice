@@ -2,10 +2,7 @@ package ar.com.l_airline.entities.flight;
 
 import ar.com.l_airline.ubications.City;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@ToString
 public class FlightDTO {
     private Long id;
     private AirlineName airLine;
