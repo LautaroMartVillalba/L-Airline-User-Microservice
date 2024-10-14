@@ -22,10 +22,24 @@ public class UserService {
         this.encoder = encoder;
     }
 
+    /**
+     * Check if any data is empty.
+     * @param dto User data to check.
+     * @return False if any data are blank or empty. True if not.
+     */
     private boolean validateUser(UserDTO dto){
-        return !dto.getName().isBlank() && !dto.getRole().name().isBlank() && !dto.getEmail().isBlank() && !dto.getPassword().isBlank() && dto.getPassword().length() >= 8;
+        return !dto.getName().isBlank()
+                && !dto.getRole().name().isBlank()
+                && !dto.getEmail().isBlank()
+                && !dto.getPassword().isBlank()
+                && dto.getPassword().length() >= 8;
     }
 
+    /**
+     * Persist a User in the DataBase.
+     * @param userDto User data to persist.
+     * @return User created information (without the encoded password).
+     */
     public UserDAO createUser(UserDTO userDto){
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
         if (dbUser.isPresent() || userDto.getPassword().length() < 8 || !validateUser(userDto)){
@@ -47,6 +61,12 @@ public class UserService {
                       .role(userDto.getRole()).build();
     }
 
+    /**
+     * Search one record in the DataBase with id number matching.
+     * @param id Identification number.
+     * @return User info if exist any matching in the DataBase. Empty optional if id number is null.
+     * @throws RuntimeException if it can't found one matching in the DataBase.
+     */
     public Optional<UserDAO> findUserById(Long id){
         if (id == null){
             return Optional.empty();
@@ -60,18 +80,28 @@ public class UserService {
                 .role(result.getRole()).build());
     }
 
+    /**
+     * Search and delete (if exists one matcher) one record in the DataBase.
+     * @param id Identification number.
+     * @return False if it can't found one record in the DataBase. True if it can found and delete.
+     */
     public boolean deleteUserById(Long id){
         Optional<User> result = repository.findById(id);
 
         if (result.isEmpty()){
             return false; //TODO throw exception
         }
-
         repository.deleteById(result.get().getId());
         return true;
     }
 
     //TODO implement pagination for each GET method
+
+    /**
+     * Search some given email matchers in the DataBase, mapping the records to a User Data Access Object to protect the password.
+     * @param email Users email.
+     * @return List of User Data Access Object if it can found some records in the DataBase. Empty list if not, or email is blank or invalid.
+     */
     public List<UserDAO> findUserByEmailContaining(String email){
         if (!email.isBlank() && email.contains("@")){
             List<User> result =  repository.findByEmailContaining(email);
@@ -88,6 +118,11 @@ public class UserService {
         return new ArrayList<>();
     }
 
+    /**
+     * Search some records in the DataBase that matching with the given name.
+     * @param name User name.
+     * @return  List of User Data Access Object if it can found some records in the DataBase. Empty list if not.
+     */
     public List<UserDAO> fundUserByName(String name){
         if (!name.isEmpty() || !name.isBlank()){
             List<User> result = repository.findByNameContaining(name);
@@ -104,6 +139,11 @@ public class UserService {
         return new ArrayList<>();
     }
 
+    /**
+     *Search one User in the DataBase by his email.
+     * @param email User email.
+     * @return Optional of User Data Access Object if it can found one record in the DataBase. Empty optional if not.
+     */
     public Optional<User> findUserByEmail(String email){
         if(!email.isBlank() && email.contains("@")){
             return repository.findByEmail(email);
@@ -111,6 +151,12 @@ public class UserService {
         return Optional.empty();
     }
 
+    /**
+     * Replace one or more data of an existing user in the DataBase.
+     * @param id Identification Number
+     * @param dto User data to change and persist.
+     * @return User Data Access Object with the changes.
+     */
     public User updateUser (Long id, UserDTO dto){
         User findUser = repository.findById(id).orElseThrow(()-> new RuntimeException("User not found."));
 

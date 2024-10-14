@@ -2,7 +2,7 @@ package ar.com.l_airline.services;
 
 import ar.com.l_airline.entities.hotel.Hotel;
 import ar.com.l_airline.entities.hotel.HotelDTO;
-import ar.com.l_airline.ubications.City;
+import ar.com.l_airline.location.City;
 import ar.com.l_airline.entities.hotel.enums.Room;
 import ar.com.l_airline.repositories.HotelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +16,23 @@ public class HotelService {
     @Autowired
     private HotelRepository repository;
 
+    /**
+     * Check if any data is blank or null.
+     * @param dto Hotel data.
+     * @return False if any data is blank or null. True if not.
+     */
     private boolean validateHotel(HotelDTO dto){
-        if(dto.getName().isBlank()
-        || dto.getRoomType().name().isBlank()
-        || dto.getCity().name().isBlank()
-        || dto.getPricePerNight() <= 0){
-            return false;
-        }
-        return true;
+        return !dto.getName().isBlank()
+                && !dto.getRoomType().name().isBlank()
+                && !dto.getCity().name().isBlank()
+                && !(dto.getPricePerNight() <= 0);
     }
 
+    /**
+     * Persist a new Hotel record in the DataBase, checking if exists a duplicated record.
+     * @param dto Hotel data to persist.
+     * @return Persisted hotel. Null if exists one record with same data.
+     */
     public Hotel createHotel (HotelDTO dto){
         Optional<Hotel> dbHotel = repository.findByNameAndCityAndRoomType(dto.getName(),
                                                                           dto.getCity(),
@@ -46,6 +53,11 @@ public class HotelService {
          return hotelSave;
     }
 
+    /**
+     * Search one Hotel record in the DataBase by his id.
+     * @param id Identification number.
+     * @return Hotel optional if it can found a record. Empty optional if id >= 0, or can't found a matching record.
+     */
     public Optional<Hotel> findHotelById(Long id){
         if (id <= 0){
             return Optional.empty();
@@ -53,6 +65,11 @@ public class HotelService {
         return repository.findById(id);
     }
 
+    /**
+     * Search some Hotel records in the DataBase by his name.
+     * @param name Hotel name.
+     * @return List of Hotels if it can found some records. Empty List if it can't found.
+     */
     public List<Hotel> findHotelByName(String name){
         if (name.isBlank()){
             return null;
@@ -60,6 +77,11 @@ public class HotelService {
         return repository.findByNameContaining(name);
     }
 
+    /**
+     * Search some Hotel records in the DataBase by his city.
+     * @param city Hotel location.
+     * @return List of Hotels if it can found some records. Empty List if it can't found.
+     */
     public List<Hotel> findHotelByCity(City city){
         if (city == null){
             return null;
@@ -67,6 +89,11 @@ public class HotelService {
         return repository.findByCity(city);
     }
 
+    /**
+     * Search some Hotel records in the DataBase by his room type.
+     * @param room Hotel room type.
+     * @return List of Hotels if it can found some records. Empty List if it can't found.
+     */
     public List<Hotel> findHotelByRoom(Room room){
         if (room == null){
             return null;
@@ -74,6 +101,12 @@ public class HotelService {
         return repository.findByRoomType(room);
     }
 
+    /**
+     * Search some Hotel records in the DataBase by his room type.
+     * @param min Minimum price value.
+     * @param max Maximum price value.
+     * @return List of Hotels if it can found some records. Null if the min or max values are null.
+     */
     public List<Hotel> findHotelByPrice(double min, double max){
         if (min <= 0 || max <= min){
             return null;
@@ -81,6 +114,12 @@ public class HotelService {
         return repository.findByPricePerNightBetween(min, max);
     }
 
+    /**
+     * Replace one or more data of one record in the DataBase.
+     * @param id Identification number.
+     * @param dto Data to replace in the record.
+     * @return The persisted changes.
+     */
     public Hotel updateHotel (Long id, HotelDTO dto){
         Hotel findHotel = this.findHotelById(id).orElseThrow(() -> new RuntimeException("Hotel not found."));
 
@@ -101,6 +140,11 @@ public class HotelService {
         return  findHotel;
     }
 
+    /**
+     * Search and delete (if it can find) one Hotel record in the DataBase.
+     * @param id Identification Number.
+     * @return True if it can find and delete the Hotel. False if it can't.
+     */
     public boolean deleteHotelById(Long id){
         Optional<Hotel> findHotel = this.findHotelById(id);
         if (findHotel.isEmpty()){

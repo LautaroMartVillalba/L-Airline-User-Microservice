@@ -4,7 +4,7 @@ import ar.com.l_airline.entities.hotel.Hotel;
 import ar.com.l_airline.entities.hotel.HotelDTO;
 import ar.com.l_airline.entities.hotel.enums.Room;
 import ar.com.l_airline.services.HotelService;
-import ar.com.l_airline.ubications.City;
+import ar.com.l_airline.location.City;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

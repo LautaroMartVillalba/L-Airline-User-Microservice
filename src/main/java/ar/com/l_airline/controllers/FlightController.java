@@ -4,7 +4,7 @@ import ar.com.l_airline.entities.flight.AirlineName;
 import ar.com.l_airline.entities.flight.Flight;
 import ar.com.l_airline.entities.flight.FlightDTO;
 import ar.com.l_airline.services.FlightService;
-import ar.com.l_airline.ubications.City;
+import ar.com.l_airline.location.City;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

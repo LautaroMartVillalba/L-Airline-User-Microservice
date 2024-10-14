@@ -1,6 +1,6 @@
 package ar.com.l_airline.entities.flight;
 
-import ar.com.l_airline.ubications.City;
+import ar.com.l_airline.location.City;
 import jakarta.persistence.*;
 import lombok.*;
 
