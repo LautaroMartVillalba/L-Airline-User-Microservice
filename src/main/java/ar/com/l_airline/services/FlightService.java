@@ -3,6 +3,7 @@ package ar.com.l_airline.services;
 import ar.com.l_airline.entities.flight.AirlineName;
 import ar.com.l_airline.entities.flight.Flight;
 import ar.com.l_airline.entities.flight.FlightDTO;
+import ar.com.l_airline.exceptionHandler.MissingDataException;
 import ar.com.l_airline.repositories.FlightRepository;
 import ar.com.l_airline.location.City;
 import org.springframework.stereotype.Service;
@@ -51,9 +52,9 @@ public class FlightService {
      * @param dto Record to insert.
      * @return Null value if can't persist.
      */
-    public Flight createFlight(FlightDTO dto){
+    public Flight createFlight(FlightDTO dto) throws MissingDataException {
         if (!validateFlight(dto)){
-            return null;
+            throw new MissingDataException();
         }
         Flight flight = Flight.builder().airLine(dto.getAirLine())
                                         .origin(dto.getOrigin())
@@ -143,7 +144,7 @@ public class FlightService {
      */
     public List<Flight> findByPriceBetween (double min, double max){
         if (min < 0 || max < min){
-            return null; //TODO exception handler
+            return null;
         }
         return repository.findByPriceBetween(min, max);
     }

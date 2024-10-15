@@ -2,6 +2,8 @@ package ar.com.l_airline.services;
 
 import ar.com.l_airline.entities.hotel.Hotel;
 import ar.com.l_airline.entities.hotel.HotelDTO;
+import ar.com.l_airline.exceptionHandler.ExistingObjectException;
+import ar.com.l_airline.exceptionHandler.MissingDataException;
 import ar.com.l_airline.location.City;
 import ar.com.l_airline.entities.hotel.enums.Room;
 import ar.com.l_airline.repositories.HotelRepository;
@@ -38,12 +40,25 @@ public class HotelService {
                                                                           dto.getCity(),
                                                                           dto.getRoomType());
         if (dbHotel.isPresent()
-            && dto.getName().equals(dbHotel.get().getName())
-            && dto.getCity() == dbHotel.get().getCity()
-            && dto.getRoomType() == dbHotel.get().getRoomType()
-            && dto.getPricePerNight() == dbHotel.get().getPricePerNight()){
-            return null;
+                && dto.getName().equals(dbHotel.get().getName())
+                && dto.getCity() == dbHotel.get().getCity()
+                && dto.getRoomType() == dbHotel.get().getRoomType()
+                && dto.getPricePerNight() == dbHotel.get().getPricePerNight()){
+            try {
+                throw new ExistingObjectException();
+            } catch (ExistingObjectException e) {
+                throw new RuntimeException(e);
+            }
         }
+
+        if (!validateHotel(dto)){
+            try {
+                throw new MissingDataException();
+            } catch (MissingDataException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         Hotel hotelSave = Hotel.builder()
                                .name(dto.getName())
                                .city(dto.getCity())

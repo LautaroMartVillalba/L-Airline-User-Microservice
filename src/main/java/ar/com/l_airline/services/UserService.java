@@ -3,6 +3,9 @@ package ar.com.l_airline.services;
 import ar.com.l_airline.entities.user.User;
 import ar.com.l_airline.entities.user.UserDAO;
 import ar.com.l_airline.entities.user.UserDTO;
+import ar.com.l_airline.exceptionHandler.ExistingObjectException;
+import ar.com.l_airline.exceptionHandler.MissingDataException;
+import ar.com.l_airline.exceptionHandler.NotFoundException;
 import ar.com.l_airline.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,10 +43,15 @@ public class UserService {
      * @param userDto User data to persist.
      * @return User created information (without the encoded password).
      */
-    public UserDAO createUser(UserDTO userDto){
+    public UserDAO createUser(UserDTO userDto) throws MissingDataException, ExistingObjectException {
+        if (!validateUser(userDto)){
+            throw new MissingDataException();
+        }
+
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
-        if (dbUser.isPresent() || userDto.getPassword().length() < 8 || !validateUser(userDto)){
-            return null; //TODO throw exception
+
+        if (dbUser.isPresent()){
+            throw new ExistingObjectException();
         }
         User user = User.builder().email(userDto.getEmail())
                                   .name(userDto.getName())
@@ -56,6 +64,7 @@ public class UserService {
         repository.save(user);
 
         return UserDAO.builder()
+                      .id(user.getId())
                       .name(userDto.getName())
                       .email(userDto.getEmail())
                       .role(userDto.getRole()).build();
@@ -85,17 +94,15 @@ public class UserService {
      * @param id Identification number.
      * @return False if it can't found one record in the DataBase. True if it can found and delete.
      */
-    public boolean deleteUserById(Long id){
+    public boolean deleteUserById(Long id) throws NotFoundException {
         Optional<User> result = repository.findById(id);
 
         if (result.isEmpty()){
-            return false; //TODO throw exception
+            throw new NotFoundException();
         }
         repository.deleteById(result.get().getId());
         return true;
     }
-
-    //TODO implement pagination for each GET method
 
     /**
      * Search some given email matchers in the DataBase, mapping the records to a User Data Access Object to protect the password.

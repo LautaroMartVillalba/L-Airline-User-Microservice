@@ -3,6 +3,7 @@ package ar.com.l_airline.controllers;
 import ar.com.l_airline.entities.flight.AirlineName;
 import ar.com.l_airline.entities.flight.Flight;
 import ar.com.l_airline.entities.flight.FlightDTO;
+import ar.com.l_airline.exceptionHandler.MissingDataException;
 import ar.com.l_airline.services.FlightService;
 import ar.com.l_airline.location.City;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +86,7 @@ public class FlightController {
 
     @PostMapping("/insert")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<FlightDTO> createFlight (@RequestBody FlightDTO flight){
+    public ResponseEntity<FlightDTO> createFlight (@RequestBody FlightDTO flight) throws MissingDataException {
         Flight result = service.createFlight(flight);
         if (result == null){
             return ResponseEntity.badRequest().build();

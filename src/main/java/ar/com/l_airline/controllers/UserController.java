@@ -3,6 +3,9 @@ package ar.com.l_airline.controllers;
 import ar.com.l_airline.entities.user.User;
 import ar.com.l_airline.entities.user.UserDAO;
 import ar.com.l_airline.entities.user.UserDTO;
+import ar.com.l_airline.exceptionHandler.ExistingObjectException;
+import ar.com.l_airline.exceptionHandler.MissingDataException;
+import ar.com.l_airline.exceptionHandler.NotFoundException;
 import ar.com.l_airline.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,14 +56,14 @@ public class UserController {
 
     @PostMapping("/insert")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<UserDAO> insertUser(@RequestBody UserDTO dto){
+    public ResponseEntity<UserDAO> insertUser(@RequestBody UserDTO dto) throws ExistingObjectException, MissingDataException {
         UserDAO result = service.createUser(dto);
         return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> deleteUser(@RequestParam Long id){
+    public ResponseEntity<User> deleteUser(@RequestParam Long id) throws NotFoundException {
         boolean result = service.deleteUserById(id);
         if (!result){
             return ResponseEntity.notFound().build();
