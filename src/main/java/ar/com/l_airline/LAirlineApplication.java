@@ -1,7 +1,5 @@
 package ar.com.l_airline;
 
-import ar.com.l_airline.services.FlightService;
-import ar.com.l_airline.services.HotelService;
 import ar.com.l_airline.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +19,7 @@ public class LAirlineApplication {
 
 	@Autowired
 	@Bean
-	public CommandLineRunner run(UserService userService, HotelService hotelService, FlightService flightService){
+	public CommandLineRunner run(UserService userService){
 
 		return args -> {
 		};

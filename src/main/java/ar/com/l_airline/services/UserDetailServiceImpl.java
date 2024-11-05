@@ -1,4 +1,4 @@
-package ar.com.l_airline.security;
+package ar.com.l_airline.services;
 
 import ar.com.l_airline.entities.user.User;
 import ar.com.l_airline.services.UserService;
@@ -26,11 +26,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority("ROLE_".concat(user.getRole().name())));
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                                                                      user.getPassword(),
-                                                                      user.isEnabled(),
-                                                                      user.isAccountNoExpired(),
-                                                                      user.isCredentialsNoExpired(),
-                                                                      user.isAccountNoLocked(),
-                                                                      authorities);
+                user.getPassword(),
+                user.isEnabled(),
+                user.isAccountNoExpired(),
+                user.isCredentialsNoExpired(),
+                user.isAccountNoLocked(),
+                authorities);
     }
 }
