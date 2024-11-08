@@ -1,8 +1,8 @@
 package ar.com.l_airline.controllers;
 
 import ar.com.l_airline.entities.user.User;
-import ar.com.l_airline.entities.user.UserDAO;
-import ar.com.l_airline.entities.user.UserDTO;
+import ar.com.l_airline.dao.UserDAO;
+import ar.com.l_airline.dto.UserDTO;
 import ar.com.l_airline.exceptionHandler.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.MissingDataException;
 import ar.com.l_airline.exceptionHandler.NotFoundException;
