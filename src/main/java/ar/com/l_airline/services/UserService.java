@@ -1,8 +1,8 @@
 package ar.com.l_airline.services;
 
-import ar.com.l_airline.entities.user.User;
-import ar.com.l_airline.entities.user.UserDAO;
-import ar.com.l_airline.entities.user.UserDTO;
+import ar.com.l_airline.entities.Roles;
+import ar.com.l_airline.entities.User;
+import ar.com.l_airline.dto.UserDTO;
 import ar.com.l_airline.exceptionHandler.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.MissingDataException;
 import ar.com.l_airline.exceptionHandler.NotFoundException;
@@ -19,10 +19,12 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository repository, PasswordEncoder encoder) {
+    public UserService(UserRepository repository, PasswordEncoder encoder, JwtService jwtService) {
         this.repository = repository;
         this.encoder = encoder;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -34,8 +36,7 @@ public class UserService {
         return !dto.getName().isBlank()
                 && !dto.getRole().name().isBlank()
                 && !dto.getEmail().isBlank()
-                && !dto.getPassword().isBlank()
-                && dto.getPassword().length() >= 8;
+                && !dto.getPassword().isBlank();
     }
 
     /**
@@ -43,7 +44,7 @@ public class UserService {
      * @param userDto User data to persist.
      * @return User created information (without the encoded password).
      */
-    public UserDAO createUser(UserDTO userDto) throws MissingDataException, ExistingObjectException {
+    public UserDTO createUser(UserDTO userDto) throws MissingDataException, ExistingObjectException {
         if (!validateUser(userDto)){
             throw new MissingDataException();
         }
@@ -63,7 +64,7 @@ public class UserService {
                                   .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
 
-        return UserDAO.builder()
+        return UserDTO.builder()
                       .id(user.getId())
                       .name(userDto.getName())
                       .email(userDto.getEmail())
@@ -76,13 +77,13 @@ public class UserService {
      * @return User info if exist any matching in the DataBase. Empty optional if id number is null.
      * @throws RuntimeException if it can't found one matching in the DataBase.
      */
-    public Optional<UserDAO> findUserById(Long id){
+    public Optional<UserDTO> findUserById(Long id){
         if (id == null){
             return Optional.empty();
         }
         User result = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found."));
 
-        return Optional.ofNullable(UserDAO.builder()
+        return Optional.ofNullable(UserDTO.builder()
                 .id(result.getId())
                 .name(result.getName())
                 .email(result.getEmail())
@@ -109,12 +110,12 @@ public class UserService {
      * @param email Users email.
      * @return List of User Data Access Object if it can found some records in the DataBase. Empty list if not, or email is blank or invalid.
      */
-    public List<UserDAO> findUserByEmailContaining(String email){
+    public List<UserDTO> findUserByEmailContaining(String email){
         if (!email.isBlank() && email.contains("@")){
             List<User> result =  repository.findByEmailContaining(email);
 
-            List<UserDAO> daoTransfer = new ArrayList<>();
-            result.forEach(user -> daoTransfer.add(UserDAO.builder()
+            List<UserDTO> daoTransfer = new ArrayList<>();
+            result.forEach(user -> daoTransfer.add(UserDTO.builder()
                                                           .id(user.getId())
                                                           .name(user.getName())
                                                           .email(user.getEmail())
@@ -130,12 +131,12 @@ public class UserService {
      * @param name User name.
      * @return  List of User Data Access Object if it can found some records in the DataBase. Empty list if not.
      */
-    public List<UserDAO> fundUserByName(String name){
+    public List<UserDTO> fundUserByName(String name){
         if (!name.isEmpty() || !name.isBlank()){
             List<User> result = repository.findByNameContaining(name);
 
-            List<UserDAO> daoTransfer = new ArrayList<>();
-            result.forEach(user -> daoTransfer.add(UserDAO.builder()
+            List<UserDTO> daoTransfer = new ArrayList<>();
+            result.forEach(user -> daoTransfer.add(UserDTO.builder()
                     .id(user.getId())
                     .name(user.getName())
                     .email(user.getEmail())
@@ -182,5 +183,16 @@ public class UserService {
 
         repository.save(findUser);
         return findUser;
+    }
+
+    public String generateToken(String email, Roles role){
+        if (email.isEmpty() || role.toString().isEmpty()){
+            return null;
+        }
+        return jwtService.createToken(email, role);
+    }
+
+    public void validateToken(String token){
+        jwtService.validateToken(token);
     }
 }

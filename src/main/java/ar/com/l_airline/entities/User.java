@@ -1,4 +1,4 @@
-package ar.com.l_airline.entities.user;
+package ar.com.l_airline.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

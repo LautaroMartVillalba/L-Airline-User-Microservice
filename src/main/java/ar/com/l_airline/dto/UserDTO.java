@@ -1,15 +1,12 @@
-package ar.com.l_airline.entities.user;
+package ar.com.l_airline.dto;
 
+import ar.com.l_airline.entities.Roles;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class UserDTO {
     private Long id;

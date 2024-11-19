@@ -1,8 +1,7 @@
 package ar.com.l_airline.controllers;
 
-import ar.com.l_airline.entities.user.User;
-import ar.com.l_airline.entities.user.UserDAO;
-import ar.com.l_airline.entities.user.UserDTO;
+import ar.com.l_airline.entities.User;
+import ar.com.l_airline.dto.UserDTO;
 import ar.com.l_airline.exceptionHandler.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.MissingDataException;
 import ar.com.l_airline.exceptionHandler.NotFoundException;
@@ -24,10 +23,9 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping("/byId")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Optional<UserDAO>> findByID(@RequestParam Long id){
-        Optional<UserDAO> result = service.findUserById(id);
+    @GetMapping("/byId/{id}")
+    public ResponseEntity<Optional<UserDTO>> findByID(@PathVariable Long id){
+        Optional<UserDTO> result = service.findUserById(id);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -35,9 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/byEmail")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<UserDAO>> findByEmailContaining(@RequestParam String email){
-        List<UserDAO> result = service.findUserByEmailContaining(email);
+    public ResponseEntity<List<UserDTO>> findByEmailContaining(@RequestParam String email){
+        List<UserDTO> result = service.findUserByEmailContaining(email);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -45,9 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/byName")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<UserDAO>> findByName(@RequestParam String name){
-        List<UserDAO> result = service.fundUserByName(name);
+    public ResponseEntity<List<UserDTO>> findByName(@RequestParam String name){
+        List<UserDTO> result = service.fundUserByName(name);
         if (result.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -55,14 +51,12 @@ public class UserController {
     }
 
     @PostMapping("/insert")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<UserDAO> insertUser(@RequestBody UserDTO dto) throws ExistingObjectException, MissingDataException {
-        UserDAO result = service.createUser(dto);
+    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto) throws ExistingObjectException, MissingDataException {
+        UserDTO result = service.createUser(dto);
         return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> deleteUser(@RequestParam Long id) throws NotFoundException {
         boolean result = service.deleteUserById(id);
         if (!result){
@@ -72,7 +66,6 @@ public class UserController {
     }
 
     @PatchMapping("/updateInfo")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserDTO dto){
         User result = service.updateUser(id, dto);
 

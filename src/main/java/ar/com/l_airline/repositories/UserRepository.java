@@ -1,6 +1,6 @@
 package ar.com.l_airline.repositories;
 
-import ar.com.l_airline.entities.user.User;
+import ar.com.l_airline.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
