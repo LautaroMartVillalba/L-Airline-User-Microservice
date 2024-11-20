@@ -16,6 +16,13 @@ public class UserDetailsCustomImpl implements UserDetailsService {
     @Autowired
     UserRepository repository;
 
+    /**
+     * Search in the database a user and create a UserDetailsCustom object with the default data
+     * and the given by the database.
+     * @param email the unique data to search one specific user in the database.
+     * @return new UserDetailsCustom with the founded user in the database.
+     * @throws UsernameNotFoundException if it can't found a user in the database.
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = repository.findByEmail(email);

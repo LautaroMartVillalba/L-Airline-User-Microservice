@@ -18,15 +18,29 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
+    /**
+     *  Decode the secret value in a byte array, and ser the hashing algorithm with .hmacShaKey().
+     */
     public SecretKey getSingKey() {
         byte[] key = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(key);
     }
 
+    /**
+     *  User getSingKey() to obtain the token's hashing algorithm to and obtain the Payload.
+     * @param token User's generated token.
+     */
     public void validateToken(String token) {
         Jwts.parser().verifyWith(getSingKey()).build().parseSignedClaims(token).getPayload();
     }
 
+    /**
+     *  Use the user's email like subject data; role like claim data; set an 15 minutes expiration; and
+     *  sing the token with the getSingKey() hashing algorithm.
+     * @param email User's email.
+     * @param role User's role.
+     * @return Created token with user's info.
+     */
     public String createToken(String email, Roles role) {
         Map<String, Object> claims = new HashMap<>();
 
