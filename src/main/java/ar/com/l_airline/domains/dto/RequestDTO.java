@@ -1,4 +1,4 @@
-package ar.com.l_airline.dto;
+package ar.com.l_airline.domains.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

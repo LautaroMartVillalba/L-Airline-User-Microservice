@@ -1,13 +1,12 @@
 package ar.com.l_airline.controllers;
 
-import ar.com.l_airline.entities.User;
-import ar.com.l_airline.dto.UserDTO;
-import ar.com.l_airline.exceptionHandler.ExistingObjectException;
-import ar.com.l_airline.exceptionHandler.MissingDataException;
-import ar.com.l_airline.exceptionHandler.NotFoundException;
+import ar.com.l_airline.domains.entities.User;
+import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

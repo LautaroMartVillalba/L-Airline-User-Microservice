@@ -1,6 +1,6 @@
-package ar.com.l_airline.dto;
+package ar.com.l_airline.domains.dto;
 
-import ar.com.l_airline.entities.Roles;
+import ar.com.l_airline.domains.enums.Roles;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;

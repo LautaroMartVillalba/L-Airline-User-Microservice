@@ -1,7 +1,7 @@
 package ar.com.l_airline.controllers;
 
-import ar.com.l_airline.entities.User;
-import ar.com.l_airline.services.JwtService;
+import ar.com.l_airline.domains.entities.User;
+import ar.com.l_airline.security.jwt.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

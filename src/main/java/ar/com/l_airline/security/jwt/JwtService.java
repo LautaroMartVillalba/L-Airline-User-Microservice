@@ -1,6 +1,6 @@
-package ar.com.l_airline.services;
+package ar.com.l_airline.security.jwt;
 
-import ar.com.l_airline.entities.Roles;
+import ar.com.l_airline.domains.enums.Roles;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

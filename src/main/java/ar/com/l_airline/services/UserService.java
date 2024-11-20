@@ -1,12 +1,13 @@
 package ar.com.l_airline.services;
 
-import ar.com.l_airline.entities.Roles;
-import ar.com.l_airline.entities.User;
-import ar.com.l_airline.dto.UserDTO;
-import ar.com.l_airline.exceptionHandler.ExistingObjectException;
-import ar.com.l_airline.exceptionHandler.MissingDataException;
-import ar.com.l_airline.exceptionHandler.NotFoundException;
+import ar.com.l_airline.domains.enums.Roles;
+import ar.com.l_airline.domains.entities.User;
+import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.repositories.UserRepository;
+import ar.com.l_airline.security.jwt.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

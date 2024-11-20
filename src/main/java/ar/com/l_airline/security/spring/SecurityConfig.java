@@ -1,4 +1,4 @@
-package ar.com.l_airline.security;
+package ar.com.l_airline.security.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
