@@ -3,6 +3,7 @@ package ar.com.l_airline.services;
 import ar.com.l_airline.domains.enums.Roles;
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
@@ -82,7 +83,7 @@ public class UserService {
         if (id == null){
             return Optional.empty();
         }
-        User result = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found."));
+        User result = repository.findById(id).orElseThrow(() -> new NotFoundException());
 
         return Optional.ofNullable(UserDTO.builder()
                 .id(result.getId())
@@ -193,7 +194,7 @@ public class UserService {
         return jwtService.createToken(email, role);
     }
 
-    public void validateToken(String token){
+    public void validateToken(String token) throws AccessDeniedException {
         jwtService.validateToken(token);
     }
 }

@@ -1,7 +1,9 @@
 package ar.com.l_airline.controllers;
 
 import ar.com.l_airline.domains.entities.User;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
 import ar.com.l_airline.security.jwt.JwtService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,8 +36,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> validateToken(@RequestParam String token){
-        jwtService.validateToken(token);
+    @SneakyThrows
+    public ResponseEntity<String> validateToken(@RequestParam String token) {
+        try {
+            jwtService.validateToken(token);
+        } catch (AccessDeniedException e) {
+            throw new AccessDeniedException();
+        }
         return ResponseEntity.ok("Nice!");
     }
 

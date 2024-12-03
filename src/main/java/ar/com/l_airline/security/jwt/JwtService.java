@@ -1,6 +1,12 @@
 package ar.com.l_airline.security.jwt;
 
 import ar.com.l_airline.domains.enums.Roles;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -8,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +39,11 @@ public class JwtService {
      * @param token User's generated token.
      */
     public void validateToken(String token) {
-        Jwts.parser().verifyWith(getSingKey()).build().parseSignedClaims(token).getPayload();
+        try{
+            Jwts.parser().verifyWith(getSingKey()).build().parseSignedClaims(token).getPayload();
+        }catch (JwtException e){
+            throw new AccessDeniedException();
+        }
     }
 
     /**
