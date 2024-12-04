@@ -1,8 +1,8 @@
 package ar.com.l_airline.services;
 
-import ar.com.l_airline.domains.enums.Roles;
-import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.domains.entities.User;
+import ar.com.l_airline.domains.enums.Roles;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
@@ -12,6 +12,7 @@ import ar.com.l_airline.security.jwt.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +32,11 @@ public class UserService {
 
     /**
      * Check if any data is empty.
+     *
      * @param dto User data to check.
      * @return False if any data are blank or empty. True if not.
      */
-    private boolean validateUser(UserDTO dto){
+    private boolean validateUser(UserDTO dto) {
         return !dto.getName().isBlank()
                 && !dto.getRole().name().isBlank()
                 && !dto.getEmail().isBlank()
@@ -43,45 +45,47 @@ public class UserService {
 
     /**
      * Persist a User in the DataBase.
+     *
      * @param userDto User data to persist.
      * @return User created information (without the encoded password).
      */
     public UserDTO createUser(UserDTO userDto) throws MissingDataException, ExistingObjectException {
-        if (!validateUser(userDto)){
+        if (!validateUser(userDto)) {
             throw new MissingDataException();
         }
 
         Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
 
-        if (dbUser.isPresent()){
+        if (dbUser.isPresent()) {
             throw new ExistingObjectException();
         }
         User user = User.builder().email(userDto.getEmail())
-                                  .name(userDto.getName())
-                                  .password(encoder.encode(userDto.getPassword()))
-                                  .role(userDto.getRole())
-                                  .isEnabled(userDto.isEnabled())
-                                  .accountNoExpired(userDto.isAccountNoExpired())
-                                  .accountNoLocked(userDto.isAccountNoLocked())
-                                  .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
+                .name(userDto.getName())
+                .password(encoder.encode(userDto.getPassword()))
+                .role(userDto.getRole())
+                .isEnabled(userDto.isEnabled())
+                .accountNoExpired(userDto.isAccountNoExpired())
+                .accountNoLocked(userDto.isAccountNoLocked())
+                .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
 
         return UserDTO.builder()
-                      .id(user.getId())
-                      .name(userDto.getName())
-                      .email(userDto.getEmail())
-                      .role(userDto.getRole()).build();
+                .id(user.getId())
+                .name(userDto.getName())
+                .email(userDto.getEmail())
+                .role(userDto.getRole()).build();
     }
 
     /**
      * Search one record in the DataBase with id number matching.
+     *
      * @param id Identification number.
      * @return User info if exist any matching in the DataBase. Empty optional if id number is null.
      * @throws RuntimeException if it can't found one matching in the DataBase.
      */
-    public Optional<UserDTO> findUserById(Long id){
-        if (id == null){
-            return Optional.empty();
+    public Optional<UserDTO> findUserById(Long id) {
+        if (id == null) {
+            throw new NotFoundException();
         }
         User result = repository.findById(id).orElseThrow(() -> new NotFoundException());
 
@@ -94,13 +98,14 @@ public class UserService {
 
     /**
      * Search and delete (if exists one matcher) one record in the DataBase.
+     *
      * @param id Identification number.
      * @return False if it can't found one record in the DataBase. True if it can found and delete.
      */
     public boolean deleteUserById(Long id) throws NotFoundException {
         Optional<User> result = repository.findById(id);
 
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             throw new NotFoundException();
         }
         repository.deleteById(result.get().getId());
@@ -109,53 +114,63 @@ public class UserService {
 
     /**
      * Search some given email matchers in the DataBase, mapping the records to a User Data Access Object to protect the password.
+     *
      * @param email Users email.
      * @return List of User Data Access Object if it can found some records in the DataBase. Empty list if not, or email is blank or invalid.
      */
-    public List<UserDTO> findUserByEmailContaining(String email){
-        if (!email.isBlank() && email.contains("@")){
-            List<User> result =  repository.findByEmailContaining(email);
-
-            List<UserDTO> daoTransfer = new ArrayList<>();
-            result.forEach(user -> daoTransfer.add(UserDTO.builder()
-                                                          .id(user.getId())
-                                                          .name(user.getName())
-                                                          .email(user.getEmail())
-                                                          .role(user.getRole()).build()));
-
-            return daoTransfer;
+    public List<UserDTO> findUserByEmailContaining(String email) {
+        if (email.isBlank() && !email.contains("@")) {
+            throw new MissingDataException();
         }
-        return new ArrayList<>();
+        List<User> result = repository.findByEmailContaining(email);
+        if (result.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        List<UserDTO> dtoTransfer = new ArrayList<>();
+        result.forEach(user -> dtoTransfer.add(UserDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole()).build()));
+
+        return dtoTransfer;
     }
 
     /**
      * Search some records in the DataBase that matching with the given name.
+     *
      * @param name User name.
-     * @return  List of User Data Access Object if it can found some records in the DataBase. Empty list if not.
+     * @return List of User Data Access Object if it can found some records in the DataBase. Empty list if not.
      */
-    public List<UserDTO> fundUserByName(String name){
-        if (!name.isEmpty() || !name.isBlank()){
-            List<User> result = repository.findByNameContaining(name);
-
-            List<UserDTO> daoTransfer = new ArrayList<>();
-            result.forEach(user -> daoTransfer.add(UserDTO.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .role(user.getRole()).build()));
-
-            return daoTransfer;
+    public List<UserDTO> fundUserByName(String name) {
+        if (!name.isEmpty()) {
+            throw new MissingDataException();
         }
-        return new ArrayList<>();
+        List<User> result = repository.findByNameContaining(name);
+
+        if (result.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        List<UserDTO> daoTransfer = new ArrayList<>();
+        result.forEach(user -> daoTransfer.add(UserDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole()).build()));
+
+        return daoTransfer;
     }
 
     /**
-     *Search one User in the DataBase by his email.
+     * Search one User in the DataBase by his email.
+     *
      * @param email User email.
      * @return Optional of User Data Access Object if it can found one record in the DataBase. Empty optional if not.
      */
-    public Optional<User> findUserByEmail(String email){
-        if(!email.isBlank() && email.contains("@")){
+    public Optional<User> findUserByEmail(String email) {
+        if (!email.isBlank() && email.contains("@")) {
             return repository.findByEmail(email);
         }
         return Optional.empty();
@@ -163,23 +178,24 @@ public class UserService {
 
     /**
      * Replace one or more data of an existing user in the DataBase.
-     * @param id Identification Number
+     *
+     * @param id  Identification Number
      * @param dto User data to change and persist.
      * @return User Data Access Object with the changes.
      */
-    public User updateUser (Long id, UserDTO dto){
-        User findUser = repository.findById(id).orElseThrow(()-> new RuntimeException("User not found."));
+    public User updateUser(Long id, UserDTO dto) {
+        User findUser = repository.findById(id).orElseThrow(() -> new NotFoundException());
 
-        if (dto.getName() != null){
+        if (dto.getName() != null) {
             findUser.setName(dto.getName());
         }
-        if (dto.getEmail() != null){
+        if (dto.getEmail() != null) {
             findUser.setEmail(dto.getEmail());
         }
-        if (dto.getPassword() != null){
+        if (dto.getPassword() != null) {
             findUser.setPassword(dto.getPassword());
         }
-        if (dto.getRole() != null){
+        if (dto.getRole() != null) {
             findUser.setRole(dto.getRole());
         }
 
@@ -187,11 +203,16 @@ public class UserService {
         return findUser;
     }
 
-    public String generateToken(String email, Roles role){
-        if (email.isEmpty() || role.toString().isEmpty()){
-            return null;
+    public String generateToken(String email) {
+        if (email.isEmpty()) {
+            throw new MissingDataException();
         }
-        return jwtService.createToken(email, role);
+
+        User result = this.findUserByEmail(email).orElseThrow(() -> new NotFoundException());
+        String userEmail = result.getEmail();
+        Roles userRole = result.getRole();
+
+        return jwtService.createToken(userEmail, userRole);
     }
 
     public void validateToken(String token) throws AccessDeniedException {

@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
 
     /**
-     *  Return a 409 code if an existing record with matching data is found in the database.
+     * Return a 409 code if an existing record with matching data is found in the database.
+     *
      * @return 409, "This object already exists in the DataBase.".
      */
     @ExceptionHandler(value = ExistingObjectException.class)
@@ -29,7 +30,8 @@ public class ExceptionAdvice {
     }
 
     /**
-     *  Return a 400 code if required data was not received.
+     * Return a 400 code if required data was not received.
+     *
      * @return 400, "Insert all required information.".
      */
     @ExceptionHandler(value = MissingDataException.class)
@@ -39,11 +41,12 @@ public class ExceptionAdvice {
 
         log.info("An error has occurred during User Persistence: missing information for registration.");
 
-        return new ResponseEntity<>(dto,dto.getCode());
+        return new ResponseEntity<>(dto, dto.getCode());
     }
 
     /**
-     *  Return a 404 code if it doesn't found a record with data matching in the database.
+     * Return a 404 code if it doesn't found a record with data matching in the database.
+     *
      * @return 404, "Not found in the DataBase.".
      */
     @ExceptionHandler(value = NotFoundException.class)
@@ -53,11 +56,11 @@ public class ExceptionAdvice {
 
         log.info("An error has occurred during the return of information: record does not exists.");
 
-        return new ResponseEntity<>(dto,dto.getCode());
+        return new ResponseEntity<>(dto, dto.getCode());
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    public ResponseEntity<ExceptionDTO> accessDeniedExcHandler(){
+    public ResponseEntity<ExceptionDTO> accessDeniedExcHandler() {
         ExceptionDTO dto = ExceptionDTO.builder()
                 .code(HttpStatusCode.valueOf(403))
                 .message("You has no permissions to access.").build();

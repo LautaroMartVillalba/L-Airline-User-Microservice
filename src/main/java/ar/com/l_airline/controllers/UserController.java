@@ -1,7 +1,7 @@
 package ar.com.l_airline.controllers;
 
-import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
@@ -9,6 +9,7 @@ import ar.com.l_airline.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,27 +24,27 @@ public class UserController {
     }
 
     @GetMapping("/byId/{id}")
-    public ResponseEntity<Optional<UserDTO>> findByID(@PathVariable Long id){
+    public ResponseEntity<Optional<UserDTO>> findByID(@PathVariable Long id) {
         Optional<UserDTO> result = service.findUserById(id);
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/byEmail")
-    public ResponseEntity<List<UserDTO>> findByEmailContaining(@RequestParam String email){
+    public ResponseEntity<List<UserDTO>> findByEmailContaining(@RequestParam String email) {
         List<UserDTO> result = service.findUserByEmailContaining(email);
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/byName")
-    public ResponseEntity<List<UserDTO>> findByName(@RequestParam String name){
+    public ResponseEntity<List<UserDTO>> findByName(@RequestParam String name) {
         List<UserDTO> result = service.fundUserByName(name);
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
@@ -58,17 +59,17 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<User> deleteUser(@RequestParam Long id) throws NotFoundException {
         boolean result = service.deleteUserById(id);
-        if (!result){
+        if (!result) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/updateInfo")
-    public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserDTO dto){
+    public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserDTO dto) {
         User result = service.updateUser(id, dto);
 
-        if (result == null){
+        if (result == null) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(result);

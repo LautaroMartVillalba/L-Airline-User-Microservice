@@ -3,7 +3,9 @@ package ar.com.l_airline.domains.dto;
 import ar.com.l_airline.domains.enums.Roles;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 @Builder
 @Data

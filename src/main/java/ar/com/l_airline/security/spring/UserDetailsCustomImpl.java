@@ -19,6 +19,7 @@ public class UserDetailsCustomImpl implements UserDetailsService {
     /**
      * Search in the database a user and create a UserDetailsCustom object with the default data
      * and the given by the database.
+     *
      * @param email the unique data to search one specific user in the database.
      * @return new UserDetailsCustom with the founded user in the database.
      * @throws UsernameNotFoundException if it can't found a user in the database.
@@ -27,6 +28,6 @@ public class UserDetailsCustomImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = repository.findByEmail(email);
 
-        return user.map(UserDetailsCustom::new).orElseThrow(()-> new UsernameNotFoundException("User with email '" + email + "' not found."));
+        return user.map(UserDetailsCustom::new).orElseThrow(() -> new UsernameNotFoundException("User with email '" + email + "' not found."));
     }
 }
