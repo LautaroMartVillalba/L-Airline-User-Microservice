@@ -7,8 +7,8 @@ import java.util.Collection;
 
 public class UserDetailsCustom implements org.springframework.security.core.userdetails.UserDetails {
 
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
 
     public UserDetailsCustom(User user) {
         this.username = user.getName();

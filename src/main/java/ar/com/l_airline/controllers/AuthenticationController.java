@@ -25,11 +25,11 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/token")
-    public ResponseEntity<String> getToken(@RequestBody User user){
+    public ResponseEntity<String> getToken(@RequestBody User user) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
-        if (!authentication.isAuthenticated()){
+        if (!authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(jwtService.createToken(user.getEmail(), user.getRole()));

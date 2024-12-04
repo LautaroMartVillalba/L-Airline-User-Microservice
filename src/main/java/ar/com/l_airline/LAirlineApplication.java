@@ -9,6 +9,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 public class LAirlineApplication {
 
     public static void main(String[] args) {
-		SpringApplication.run(LAirlineApplication.class, args);
-	}
+        SpringApplication.run(LAirlineApplication.class, args);
+    }
 }
