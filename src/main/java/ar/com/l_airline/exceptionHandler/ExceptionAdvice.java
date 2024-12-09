@@ -24,7 +24,7 @@ public class ExceptionAdvice {
         ExceptionDTO dto = ExceptionDTO.builder().message("This object already exists in the DataBase.")
                 .code(HttpStatusCode.valueOf(409)).build();
 
-        log.info("An error has occurred during User Persistence: the user already exists.");
+        log.error("An error has occurred during User Persistence: the user already exists.");
 
         return new ResponseEntity<>(dto, dto.getCode());
     }
@@ -39,7 +39,7 @@ public class ExceptionAdvice {
         ExceptionDTO dto = ExceptionDTO.builder().message("Insert all required information.")
                 .code(HttpStatusCode.valueOf(400)).build();
 
-        log.info("An error has occurred during User Persistence: missing information for registration.");
+        log.error("An error has occurred during User Persistence: missing information for registration.");
 
         return new ResponseEntity<>(dto, dto.getCode());
     }
@@ -54,7 +54,7 @@ public class ExceptionAdvice {
         ExceptionDTO dto = ExceptionDTO.builder().message("Not found in the DataBase.")
                 .code(HttpStatusCode.valueOf(404)).build();
 
-        log.info("An error has occurred during the return of information: record does not exists.");
+        log.error("An error has occurred during the return of information: record does not exists.");
 
         return new ResponseEntity<>(dto, dto.getCode());
     }
@@ -65,7 +65,7 @@ public class ExceptionAdvice {
                 .code(HttpStatusCode.valueOf(403))
                 .message("You has no permissions to access.").build();
 
-        log.info("An error has occurred during authentication process: invalid user's credentials.");
+        log.error("An error has occurred during authentication process: invalid user's credentials.");
 
         return new ResponseEntity<>(dto, dto.getCode());
     }

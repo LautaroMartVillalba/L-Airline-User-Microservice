@@ -15,7 +15,7 @@ import java.util.Optional;
 public class UserDetailsCustomImpl implements UserDetailsService {
 
     @Autowired
-    UserService service;
+    UserRepository repository;
 
     /**
      * Search in the database a user and create a UserDetailsCustom object with the default data
@@ -27,7 +27,7 @@ public class UserDetailsCustomImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = service.findUserByEmail(email);
+        Optional<User> user = repository.findByEmail(email);
 
         return user.map(UserDetailsCustom::new).orElseThrow(() -> new UsernameNotFoundException("User with email '" + email + "' not found."));
     }
