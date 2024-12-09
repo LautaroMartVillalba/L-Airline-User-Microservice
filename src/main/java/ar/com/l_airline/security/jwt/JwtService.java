@@ -1,13 +1,17 @@
 package ar.com.l_airline.security.jwt;
 
+import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.domains.enums.Roles;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
+import ar.com.l_airline.services.UserService;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,6 +21,9 @@ import java.util.Map;
 
 @Component
 public class JwtService {
+
+    @Autowired
+    private UserService service;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -35,6 +42,9 @@ public class JwtService {
      * @param token User's generated token.
      */
     public void validateToken(String token) {
+        if (token == null || token.equals("")){
+            throw new AccessDeniedException();
+        }
         try {
             Jwts.parser().verifyWith(getSingKey()).build().parseSignedClaims(token).getPayload();
         } catch (JwtException e) {
@@ -47,13 +57,16 @@ public class JwtService {
      * sing the token with the getSingKey() hashing algorithm.
      *
      * @param email User's email.
-     * @param role  User's role.
      * @return Created token with user's info.
      */
-    public String createToken(String email, Roles role) {
-        if (email.isEmpty() || role.toString().isEmpty()){
+    public String createToken(String email) {
+        User result = service.findUserByEmail(email);
+
+        if (email.isEmpty()){
             throw new MissingDataException();
         }
+
+        Roles role = result.getRole();
 
         Map<String, Object> claims = new HashMap<>();
 
@@ -64,4 +77,5 @@ public class JwtService {
 
         return Jwts.builder().claims(claims).subject(email).issuedAt(at).expiration(exp).signWith(getSingKey()).compact();
     }
+
 }

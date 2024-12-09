@@ -2,9 +2,6 @@ package ar.com.l_airline.controllers;
 
 import ar.com.l_airline.domains.dto.UserDTO;
 import ar.com.l_airline.domains.entities.User;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,55 +20,33 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping("/byId/{id}")
-    public ResponseEntity<Optional<UserDTO>> findByID(@PathVariable Long id) {
-        Optional<UserDTO> result = service.findUserById(id);
-        if (result.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(result);
+    @GetMapping("/byId")
+    public ResponseEntity<Optional<UserDTO>> findByID(@RequestParam Long id) {
+        return ResponseEntity.ok(service.findUserById(id));
     }
 
     @GetMapping("/byEmail")
     public ResponseEntity<List<UserDTO>> findByEmailContaining(@RequestParam String email) {
-        List<UserDTO> result = service.findUserByEmailContaining(email);
-        if (result.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(service.findUserByEmailContaining(email));
     }
 
     @GetMapping("/byName")
     public ResponseEntity<List<UserDTO>> findByName(@RequestParam String name) {
-        List<UserDTO> result = service.fundUserByName(name);
-        if (result.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(service.fundUserByName(name));
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto) throws ExistingObjectException, MissingDataException {
-        UserDTO result = service.createUser(dto);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto) {
+        return ResponseEntity.ok(service.createUser(dto));
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<User> deleteUser(@RequestParam Long id) throws NotFoundException {
-        boolean result = service.deleteUserById(id);
-        if (!result) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<User> deleteUser(@RequestParam Long id) {
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/updateInfo")
     public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserDTO dto) {
-        User result = service.updateUser(id, dto);
-
-        if (result == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(service.updateUser(id, dto));
     }
 }

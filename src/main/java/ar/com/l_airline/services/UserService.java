@@ -6,7 +6,6 @@ import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectExcepti
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.repositories.UserRepository;
-import ar.com.l_airline.security.jwt.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -16,12 +15,12 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
-    private final PasswordEncoder encoder;
+    private static UserRepository repository;
+    private static PasswordEncoder encoder;
 
-    public UserService(UserRepository repository, PasswordEncoder encoder, JwtService jwtService) {
-        this.repository = repository;
-        this.encoder = encoder;
+    public UserService(UserRepository repository, PasswordEncoder encoder) {
+        UserService.repository = repository;
+        UserService.encoder = encoder;
     }
 
     /**
@@ -79,7 +78,7 @@ public class UserService {
      */
     public Optional<UserDTO> findUserById(Long id) {
         if (id == null) {
-            throw new NotFoundException();
+            throw new MissingDataException();
         }
         User result = repository.findById(id).orElseThrow(NotFoundException::new);
 
@@ -96,13 +95,13 @@ public class UserService {
      * @param id Identification number.
      * @return False if it can't found one record in the DataBase. True if it can found and delete.
      */
-    public boolean deleteUserById(Long id) throws NotFoundException {
-        Optional<User> result = repository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new NotFoundException();
+    public boolean deleteUserById(Long id) {
+        if (id == null) {
+            throw new MissingDataException();
         }
-        repository.deleteById(result.get().getId());
+        User result = repository.findById(id).orElseThrow(NotFoundException::new);
+
+        repository.deleteById(result.getId());
         return true;
     }
 
@@ -138,9 +137,10 @@ public class UserService {
      * @return List of User Data Access Object if it can found some records in the DataBase. Empty list if not.
      */
     public List<UserDTO> fundUserByName(String name) {
-        if (!name.isEmpty()) {
+        if (name.isEmpty()){
             throw new MissingDataException();
         }
+
         List<User> result = repository.findByNameContaining(name);
 
         if (result.isEmpty()) {
@@ -163,11 +163,18 @@ public class UserService {
      * @param email User email.
      * @return Optional of User Data Access Object if it can found one record in the DataBase. Empty optional if not.
      */
-    public Optional<User> findUserByEmail(String email) {
-        if (!email.isBlank() && email.contains("@")) {
-            return repository.findByEmail(email);
+    public User findUserByEmail(String email) {
+        if (email.isBlank() || !email.contains("@")) {
+            throw new MissingDataException();
         }
-        return Optional.empty();
+
+        User result = repository.findByEmail(email).orElseThrow(NotFoundException::new);
+
+        return User.builder()
+                .id(result.getId())
+                .name(result.getName())
+                .email(result.getEmail())
+                .role(result.getRole()).build();
     }
 
     /**
@@ -194,6 +201,10 @@ public class UserService {
         }
 
         repository.save(findUser);
-        return findUser;
+        return User.builder()
+                .id(findUser.getId())
+                .name(findUser.getName())
+                .email(findUser.getEmail())
+                .role(findUser.getRole()).build();
     }
 }
