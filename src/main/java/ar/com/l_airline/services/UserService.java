@@ -25,13 +25,6 @@ public class UserService {
         UserService.mailService = mailService;
     }
 
-    String emailSubject = "Thanks for register, {$userName}";
-    String emailMessage = """
-                          Thanks for use my project, {$userName}!
-                          I will enhance my coding knowledge and try to do it better.
-                          \s
-                          See you later! xoxo.""";
-
     /**
      * Check if any data is empty.
      *
@@ -71,6 +64,7 @@ public class UserService {
                 .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
 
+        //Send a "thanks" email
         mailService.sendMail(user.getEmail(), "Thanks for register!", user.getName());
 
         return UserDTO.builder()

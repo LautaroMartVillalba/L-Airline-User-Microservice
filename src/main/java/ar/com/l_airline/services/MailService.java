@@ -18,6 +18,13 @@ public class MailService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    /**
+     *  Configure the mail sending using the project's owner email address, setting a subject and an addressee name
+     * @param addresseeMail The recipient of the mail.
+     * @param subject Mail subject.
+     * @param addresseeName The recipient's name.
+     * @throws MessagingException
+     */
     public void sendMail(String addresseeMail, String subject, String addresseeName) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -25,14 +32,14 @@ public class MailService {
         mimeMessageHelper.setTo(addresseeMail);
         mimeMessageHelper.setSubject(subject);
 
-        //Thymeleaf
         Context context = new Context();
 
-        //Custom the {$message} variable in HTML
+        //Set the "username" variable to make it customisable to all registered users.
         context.setVariable("userName", addresseeName);
+        //Set the context variable listener and the variable to read.
         String htmlContent = templateEngine.process("thanksMail", context);
 
-        //To accept HTML format
+        //Use HTML format, to don't use plane text
         mimeMessageHelper.setText(htmlContent, true);
 
         mailSender.send(mimeMessage);

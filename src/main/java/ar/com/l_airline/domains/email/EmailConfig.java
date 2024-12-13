@@ -17,16 +17,23 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig {
 
+    //Use ObjectMapper to get the secret json values.
     ObjectMapper objectMapper = new ObjectMapper();
     InputStream inputStream = new ClassPathResource("PrivateCredentials.json").getInputStream();
     Map<String, String> jsonParsed = objectMapper.readValue(inputStream, Map.class);
 
+    //Project's owner mail.
     private final String email = jsonParsed.get("email.username");
+    //Project's owner application password.
     private final String password = jsonParsed.get("email.password");
 
     public EmailConfig() throws IOException {
     }
 
+    /**
+     * Set properties to a GMail implementation.
+     * @return The Gmail implementation properties.
+     */
     private Properties getEmailPropertiesToGmail(){
         Properties properties = new Properties();
 
@@ -38,6 +45,10 @@ public class EmailConfig {
         return properties;
     }
 
+    /**
+     * Apply the mail sender configurations.
+     * @return the JavaMailSender implementation
+     */
     @Bean
     public JavaMailSender javaMailSender(){
         JavaMailSenderImpl implement = new JavaMailSenderImpl();

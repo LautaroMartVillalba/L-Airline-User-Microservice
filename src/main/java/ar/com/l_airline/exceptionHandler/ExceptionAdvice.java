@@ -4,6 +4,7 @@ import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException
 import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,17 @@ public class ExceptionAdvice {
                 .message("You has no permissions to access.").build();
 
         log.error("An error has occurred during authentication process: invalid user's credentials.");
+
+        return new ResponseEntity<>(dto, dto.getCode());
+    }
+
+    @ExceptionHandler(value = MessagingException.class)
+    public ResponseEntity<ExceptionDTO> messagingExceptionExcHandler() {
+        ExceptionDTO dto = ExceptionDTO.builder()
+                .code(HttpStatusCode.valueOf(404))
+                .message("Something's bad with the email sender.").build();
+
+        log.error("An error has occurred during message sending process.");
 
         return new ResponseEntity<>(dto, dto.getCode());
     }
