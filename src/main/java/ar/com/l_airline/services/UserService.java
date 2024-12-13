@@ -6,22 +6,31 @@ import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectExcepti
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.repositories.UserRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Service
 public class UserService {
 
     private static UserRepository repository;
     private static PasswordEncoder encoder;
+    private static MailService mailService;
 
-    public UserService(UserRepository repository, PasswordEncoder encoder) {
+    public UserService(UserRepository repository, PasswordEncoder encoder, MailService mailService) {
         UserService.repository = repository;
         UserService.encoder = encoder;
+        UserService.mailService = mailService;
     }
+
+    String emailSubject = "Thanks for register, {$userName}";
+    String emailMessage = """
+                          Thanks for use my project, {$userName}!
+                          I will enhance my coding knowledge and try to do it better.
+                          \s
+                          See you later! xoxo.""";
 
     /**
      * Check if any data is empty.
@@ -42,7 +51,7 @@ public class UserService {
      * @param userDto User data to persist.
      * @return User created information (without the encoded password).
      */
-    public UserDTO createUser(UserDTO userDto) throws MissingDataException, ExistingObjectException {
+    public UserDTO createUser(UserDTO userDto) throws MessagingException {
         if (!validateUser(userDto)) {
             throw new MissingDataException();
         }
@@ -61,6 +70,8 @@ public class UserService {
                 .accountNoLocked(userDto.isAccountNoLocked())
                 .credentialsNoExpired(userDto.isCredentialsNoExpired()).build();
         repository.save(user);
+
+        mailService.sendMail(user.getEmail(), "Thanks for register!", user.getName());
 
         return UserDTO.builder()
                 .id(user.getId())

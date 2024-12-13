@@ -3,6 +3,7 @@ package ar.com.l_airline.controllers;
 import ar.com.l_airline.domains.dto.UserDTO;
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.services.UserService;
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +37,13 @@ public class UserController {
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto) {
+    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto) throws MessagingException {
         return ResponseEntity.ok(service.createUser(dto));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<User> deleteUser(@RequestParam Long id) {
+        service.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
 

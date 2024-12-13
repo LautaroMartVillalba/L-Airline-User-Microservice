@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gracias por registrarte</title>
+    <style>
+        /* Estilos para el email */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 20px;
+            border-bottom: 1px solid #3e8e41;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Thanks for register!</h1>
+    </div>
+    <div class="content">
+        <p>Dear <strong><span th:text="${userName}"></span></strong>,</p>
+        <p>Thanks for test and register your email address in my DataBase.</p>
+        <p>Maybe one day you'll get notice about my progress in ths project, or not. I don't know.</p>
+        <p>Attentively, <strong>Lautaro Villalba.</strong></p>
+        <form action="https://www.paypal.com/donate" method="post" target="_top">
+            <input type="hidden" name="hosted_button_id" value="UJ8L94SEXWG9N" />
+            <input type="image" src="https://pics.paypal.com/00/s/YWJmMWJhNjYtMTk1My00YmExLTlhODktNTYyNGYzNDdjNDU0/file.JPG" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+            <img alt="" border="0" src="https://www.paypal.com/en_AR/i/scr/pixel.gif" width="1" height="1" />
+        </form>
+
+    </div>
+</div>
+</body>
+</html>
