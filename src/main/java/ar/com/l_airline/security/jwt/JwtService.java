@@ -5,16 +5,18 @@ import ar.com.l_airline.domains.enums.Roles;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.services.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,11 +24,15 @@ import java.util.Map;
 @Component
 public class JwtService {
 
+    ObjectMapper objectMapper = new ObjectMapper();
+    InputStream inputStream = new ClassPathResource("PrivateCredentials.json").getInputStream();
+    Map<String, String> jsonParsed = objectMapper.readValue(inputStream, Map.class);
+    private final String secret = jsonParsed.get("jwt.secret");
     @Autowired
     private UserService service;
 
-    @Value("${jwt.secret}")
-    private String secret;
+    public JwtService() throws IOException {
+    }
 
     /**
      * Decode the secret value in a byte array, and ser the hashing algorithm with .hmacShaKey().
@@ -42,7 +48,7 @@ public class JwtService {
      * @param token User's generated token.
      */
     public void validateToken(String token) {
-        if (token == null || token.equals("")){
+        if (token == null || token.isEmpty()) {
             throw new AccessDeniedException();
         }
         try {
@@ -62,7 +68,7 @@ public class JwtService {
     public String createToken(String email) {
         User result = service.findUserByEmail(email);
 
-        if (email.isEmpty()){
+        if (email.isEmpty()) {
             throw new MissingDataException();
         }
 

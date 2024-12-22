@@ -17,7 +17,7 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig {
 
-    //Use ObjectMapper to get the secret json values.
+    //Use ObjectMapper to get the secret JSON values.
     ObjectMapper objectMapper = new ObjectMapper();
     InputStream inputStream = new ClassPathResource("PrivateCredentials.json").getInputStream();
     Map<String, String> jsonParsed = objectMapper.readValue(inputStream, Map.class);

@@ -23,7 +23,6 @@ public class MailService {
      * @param addresseeMail The recipient of the mail.
      * @param subject Mail subject.
      * @param addresseeName The recipient's name.
-     * @throws MessagingException
      */
     public void sendMail(String addresseeMail, String subject, String addresseeName) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -39,7 +38,7 @@ public class MailService {
         //Set the context variable listener and the variable to read.
         String htmlContent = templateEngine.process("thanksMail", context);
 
-        //Use HTML format, to don't use plane text
+        //Use an HTML format, to don't use a plane text
         mimeMessageHelper.setText(htmlContent, true);
 
         mailSender.send(mimeMessage);
