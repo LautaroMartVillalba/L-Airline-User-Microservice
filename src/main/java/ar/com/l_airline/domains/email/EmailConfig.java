@@ -19,7 +19,7 @@ public class EmailConfig {
 
     //Use ObjectMapper to get the secret JSON values.
     ObjectMapper objectMapper = new ObjectMapper();
-    InputStream inputStream = new ClassPathResource("PrivateCredentials.json").getInputStream();
+    InputStream inputStream = new ClassPathResource("MailCredentials.json").getInputStream();
     Map<String, String> jsonParsed = objectMapper.readValue(inputStream, Map.class);
 
     //Project's owner mail.

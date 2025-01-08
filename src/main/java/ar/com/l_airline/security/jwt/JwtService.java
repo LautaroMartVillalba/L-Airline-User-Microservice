@@ -25,7 +25,7 @@ import java.util.Map;
 public class JwtService {
 
     ObjectMapper objectMapper = new ObjectMapper();
-    InputStream inputStream = new ClassPathResource("PrivateCredentials.json").getInputStream();
+    InputStream inputStream = new ClassPathResource("MailCredentials.json").getInputStream();
     Map<String, String> jsonParsed = objectMapper.readValue(inputStream, Map.class);
     private final String secret = jsonParsed.get("jwt.secret");
     @Autowired
@@ -33,6 +33,7 @@ public class JwtService {
 
     public JwtService() throws IOException {
     }
+
 
     /**
      * Decode the secret value in a byte array, and ser the hashing algorithm with .hmacShaKey().
