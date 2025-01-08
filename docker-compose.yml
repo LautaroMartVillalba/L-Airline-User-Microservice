@@ -3,24 +3,43 @@ services:
     image: postgres
     restart: always
     shm_size: 128mb
+    ports:
+      - "5431:5432"
     container_name: database
     volumes:
       - postgres_persist:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: airline
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "airline" ]
       interval: 10s
       timeout: 5s
       retries: 3
 
+  vault-custom:
+    image: custom-vault
+    container_name: vault-custom
+    environment:
+      VAULT_ADDR: http://vault-custom:8200
+    ports:
+      - "8200:8200"
+    volumes:
+      - vault_persist:/vault/file:rw
+      - ./vault:/vault/config:rw
+    cap_add:
+      - IPC_LOCK
+    entrypoint: /bin/sh -c "vault server -config=/vault/config/config.json & /vault/config/unseal.sh; wait $!"
+
   jwt-user:
-    image: jwt-user:v2
+    image: user:v1
     container_name: jwt-user-cont
     depends_on:
-      - database
+      - vault-custom
+    ports:
+      - "9000:9000"
 
 volumes:
   postgres_persist:
+  vault_persist:
