@@ -11,6 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +25,8 @@ import java.util.Map;
 @Component
 public class JwtService {
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    InputStream inputStream = new ClassPathResource("MailCredentials.json").getInputStream();
-    Map<String, String> jsonParsed = objectMapper.readValue(inputStream, Map.class);
-    private final String secret = jsonParsed.get("jwt.secret");
+    @Value("${jwt.secret}")
+    private String secret;
     @Autowired
     private UserService service;
 
