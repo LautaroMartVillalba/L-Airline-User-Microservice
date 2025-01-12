@@ -3,7 +3,6 @@ package ar.com.l_airline.controllers;
 import ar.com.l_airline.domains.dto.UserDTO;
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.services.UserService;
-import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto) throws MessagingException {
+    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto){
         return ResponseEntity.ok(service.createUser(dto));
     }
 

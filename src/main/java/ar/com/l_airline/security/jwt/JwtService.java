@@ -59,7 +59,7 @@ public class JwtService {
     }
 
     /**
-     * Use the user's email like subject data; role like claim data; set an 15 minutes expiration; and
+     * Use the user's email like subject data; role like claim data; set a 15-minute expiration; and
      * sing the token with the getSingKey() hashing algorithm.
      *
      * @param email User's email.
