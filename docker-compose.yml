@@ -36,16 +36,11 @@ services:
     networks:
       airline_net:
 
-  jwt-user:
-    image: user:v1
-    container_name: jwt-user-cont
-    depends_on:
-      - eureka
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
-      - spring.cloud.vault.token= ${TOKEN}
+  eureka:
+    image: eureka:v1
+    container_name: eureka
     ports:
-      - "9000:9000"
+      - "8761:8761"
     networks:
       airline_net:
 
@@ -61,11 +56,29 @@ services:
     networks:
       airline_net:
 
-  eureka:
-    image: eureka:v1
-    container_name: eureka
+  jwt-user:
+    image: user:v1
+    container_name: jwt-user
+    depends_on:
+      - gateway
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.vault.token= ${TOKEN}
     ports:
-      - "8761:8761"
+      - "9000:9000"
+    networks:
+      airline_net:
+
+  hotel:
+    image: hotel:v1
+    container_name: hotel
+    depends_on:
+      - gateway
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.vault.token= ${TOKEN}
+    ports:
+      - "9002:9002"
     networks:
       airline_net:
 
