@@ -9,8 +9,8 @@ services:
     volumes:
       - postgres_persist:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${USER}
-      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_USER}
       POSTGRES_DB: airline
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "airline" ]
@@ -40,7 +40,10 @@ services:
     image: user:v1
     container_name: jwt-user-cont
     depends_on:
-      - vault-custom
+      - eureka
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.vault.token= ${TOKEN}
     ports:
       - "9000:9000"
     networks:
@@ -52,7 +55,17 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - vault-custom
+      - eureka
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+    networks:
+      airline_net:
+
+  eureka:
+    image: eureka:v1
+    container_name: eureka
+    ports:
+      - "8761:8761"
     networks:
       airline_net:
 
