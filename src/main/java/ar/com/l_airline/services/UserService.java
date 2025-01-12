@@ -44,7 +44,7 @@ public class UserService {
      * @param userDto User data to persist.
      * @return User created information (without the encoded password).
      */
-    public UserDTO createUser(UserDTO userDto) throws MessagingException {
+    public UserDTO createUser(UserDTO userDto){
         if (!validateUser(userDto)) {
             throw new MissingDataException();
         }
@@ -65,7 +65,11 @@ public class UserService {
         repository.save(user);
 
         //Send a "thanks" email
-        mailService.sendMail(user.getEmail(), "Thanks for register!", user.getName());
+        try {
+            mailService.sendMail(user.getEmail(), "Thanks for register!", user.getName());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
 
         return UserDTO.builder()
                 .id(user.getId())
