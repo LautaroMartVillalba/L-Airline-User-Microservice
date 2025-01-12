@@ -15,7 +15,6 @@ spring:
       host: vault-custom
       port: 8200
       scheme: http
-      token: ${TOKEN}
       authentication : TOKEN
       kv:
         backend: kv
