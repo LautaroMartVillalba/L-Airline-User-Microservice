@@ -21,7 +21,7 @@ services:
       airline_net:
 
   vault-custom:
-    image: custom-vault
+    image: lautaromvillalba/custom-vault
     container_name: vault-custom
     environment:
       VAULT_ADDR: http://vault-custom:8200
@@ -37,7 +37,7 @@ services:
       airline_net:
 
   eureka:
-    image: eureka:v1
+    image: lautaromvillalba/eureka:v1
     container_name: eureka
     ports:
       - "8761:8761"
@@ -45,7 +45,7 @@ services:
       airline_net:
 
   gateway:
-    image: gateway:v1
+    image: lautaromvillalba/gateway:v1
     container_name: gateway
     ports:
       - "8080:8080"
@@ -57,7 +57,7 @@ services:
       airline_net:
 
   jwt-user:
-    image: user:v1
+    image: lautaromvillalba/user:v1
     container_name: jwt-user
     depends_on:
       - gateway
@@ -70,7 +70,7 @@ services:
       airline_net:
 
   hotel:
-    image: hotel:v1
+    image: lautaromvillalba/hotel:v1
     container_name: hotel
     depends_on:
       - gateway
@@ -83,7 +83,7 @@ services:
       airline_net:
 
   flight:
-    image: flight:v1
+    image: lautaromvillalba/flight:v1
     container_name: flight
     depends_on:
       - gateway
