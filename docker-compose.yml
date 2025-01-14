@@ -3,8 +3,6 @@ services:
     image: postgres
     restart: always
     shm_size: 128mb
-    ports:
-      - "5431:5432"
     container_name: database
     volumes:
       - postgres_persist:/var/lib/postgresql/data
@@ -25,8 +23,6 @@ services:
     container_name: vault-custom
     environment:
       VAULT_ADDR: http://vault-custom:8200
-    ports:
-      - "8200:8200"
     volumes:
       - vault_persist:/vault/file:rw
       - ./vault:/vault/config:rw
@@ -57,15 +53,13 @@ services:
       airline_net:
 
   jwt-user:
-    image: lautaromvillalba/user:v1
+    image: lautaromvillalba/user:v1.1
     container_name: jwt-user
     depends_on:
       - gateway
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
       - spring.cloud.vault.token= ${TOKEN}
-    ports:
-      - "9000:9000"
     networks:
       airline_net:
 
@@ -77,8 +71,6 @@ services:
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
       - spring.cloud.vault.token= ${TOKEN}
-    ports:
-      - "9002:9002"
     networks:
       airline_net:
 
@@ -90,8 +82,6 @@ services:
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
       - spring.cloud.vault.token= ${TOKEN}
-    ports:
-      - "9003:9003"
     networks:
       airline_net:
 
