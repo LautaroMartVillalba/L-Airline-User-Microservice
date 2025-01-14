@@ -1,8 +1,8 @@
-package ar.com.l_airline.security.spring;
+package ar.com.l_airline.services;
 
+import ar.com.l_airline.configuration.UserDetailsCustom;
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.repositories.UserRepository;
-import ar.com.l_airline.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

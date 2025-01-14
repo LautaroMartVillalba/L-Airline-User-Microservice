@@ -1,4 +1,4 @@
-package ar.com.l_airline.security.spring;
+package ar.com.l_airline.configuration;
 
 import ar.com.l_airline.domains.entities.User;
 import org.springframework.security.core.GrantedAuthority;

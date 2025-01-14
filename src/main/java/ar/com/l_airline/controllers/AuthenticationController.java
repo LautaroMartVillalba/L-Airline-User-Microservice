@@ -1,7 +1,7 @@
 package ar.com.l_airline.controllers;
 
 import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
-import ar.com.l_airline.security.jwt.JwtService;
+import ar.com.l_airline.services.JwtService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

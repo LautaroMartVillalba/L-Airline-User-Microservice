@@ -1,4 +1,4 @@
-package ar.com.l_airline.domains.email;
+package ar.com.l_airline.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

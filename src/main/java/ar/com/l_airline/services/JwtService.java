@@ -1,23 +1,19 @@
-package ar.com.l_airline.security.jwt;
+package ar.com.l_airline.services;
 
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.domains.enums.Roles;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
-import ar.com.l_airline.services.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
