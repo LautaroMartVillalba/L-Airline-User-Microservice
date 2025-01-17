@@ -13,6 +13,7 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig {
 
+//The two following variables are only testing and divulgation values.
     //Project's owner mail.
     @Value("${email.address}")
     private String email;
