@@ -60,31 +60,5 @@ These makes secured the Vault Connection and doesn't expose the Token Root Login
 This network helps the services to be in a common environment,
 helping to the Eureka Server connection and communication.
 
-## Vault implementation
-Will dislodge the vault configuration in docker-compose:
-
-``` yml
-vault-custom:
-image: lautaromvillalba/custom-vault
-container_name: vault-custom
-environment:
-VAULT_ADDR: http://vault-custom:8200
-ports:
-- "8200:8200"
-volumes:
-- vault_persist:/vault/file:rw
-- ./vault:/vault/config:rw
-cap_add:
-- IPC_LOCK
-entrypoint: /bin/sh -c "vault server -config=/vault/config/config.json & /vault/config/unseal.sh; wait $!"
-networks:
-airline_net:
-```
-- `VAULT_ADDR: http://vault-custom:8200`: set the url where Vault will work. "vault-custom" from the container, and "8200" it's the selected port.
-- `volumes`: first the vault_persist is charged in vault/file container folder to persist the created keys (only if dev mode is disabled). In the second step, copy a local folder that has unseal.sh and config.json files.
-  - **unseal.sh** is a no persisted file, that's cause this file can expose the unseal keys, creating a dangerous security gap.
-  - **config.json** set the vault server configuration (storage directory, api address, vault host address, and tls protocol disabling).
-- `cap_add`: get privileges to brake the memory access to protect the key traffic and avoid duplications or leaks.
-- `entrypoint`:
-  - `vault server -config=/vault/config/config.json`: execute vault with the injected configuration
-  - `/vault/config/unseal.sh`: execute the unseal archive to make possible that microservices read the k-v instances.
+## You want to know how to run the docker-compose.yml? Go to
+[How to use L-Airline docker-compose](https://github.com/LautaroMartVillalba/L-Airline-DockerCompose)
