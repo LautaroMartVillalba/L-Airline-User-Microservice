@@ -1,6 +1,6 @@
 services:
   database:
-    image: postgres
+    image: lautaromvillalba/postgres-custom:v1.1
     restart: always
     shm_size: 128mb
     container_name: database
