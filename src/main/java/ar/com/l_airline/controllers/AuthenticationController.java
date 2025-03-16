@@ -1,9 +1,15 @@
 package ar.com.l_airline.controllers;
 
 import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.services.JwtService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +28,8 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "jwt")
     @PostMapping("/token")
     public ResponseEntity<String> getToken(@RequestParam String email, @RequestParam String password) {
         Authentication authentication = authenticationManager.authenticate(
@@ -33,7 +41,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(jwtService.createToken(email));
     }
 
+    @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
     @PostMapping("/validate")
+    @RateLimiter(name = "jwt")
     @SneakyThrows
     public ResponseEntity<String> validateToken(@RequestParam String token) {
         try {
@@ -42,6 +52,23 @@ public class AuthenticationController {
             throw new AccessDeniedException();
         }
         return ResponseEntity.ok("Nice!");
+    }
+
+    private ResponseEntity<String> fallback(Exception e){
+        if (e instanceof NotFoundException) {
+            throw new NotFoundException();
+        }
+        if (e instanceof AccessDeniedException) {
+            throw new AccessDeniedException();
+        }
+        if (e instanceof ExistingObjectException) {
+            throw new ExistingObjectException();
+        }
+        if (e instanceof MissingDataException) {
+            throw new MissingDataException();
+        }
+
+        return new ResponseEntity<>("An error has occurred in our services servers. Please, try again later.", HttpStatusCode.valueOf(503));
     }
 
 }

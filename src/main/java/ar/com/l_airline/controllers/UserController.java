@@ -5,6 +5,7 @@ import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.*;
 import ar.com.l_airline.services.UserService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,30 +25,35 @@ public class UserController {
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "get")
     @GetMapping("/byId")
     public ResponseEntity<Optional<UserDTO>> findByID(@RequestParam Long id) {
             return ResponseEntity.ok(service.findUserById(id));
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "get")
     @GetMapping("/byEmail")
     public ResponseEntity<List<UserDTO>> findByEmailContaining(@RequestParam String email) {
         return ResponseEntity.ok(service.findUserByEmailContaining(email));
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "get")
     @GetMapping("/byName")
     public ResponseEntity<List<UserDTO>> findByName(@RequestParam String name) {
         return ResponseEntity.ok(service.fundUserByName(name));
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "post-delete-patch")
     @PostMapping("/insert")
     public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO dto){
         return ResponseEntity.ok(service.createUser(dto));
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "post-delete-patch")
     @DeleteMapping("/delete")
     public ResponseEntity<User> deleteUser(@RequestParam Long id) {
         service.deleteUserById(id);
@@ -55,6 +61,7 @@ public class UserController {
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
+    @RateLimiter(name = "post-delete-patch")
     @PatchMapping("/updateInfo")
     public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserDTO dto) {
         return ResponseEntity.ok(service.updateUser(id, dto));

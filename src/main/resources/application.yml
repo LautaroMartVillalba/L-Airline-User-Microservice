@@ -33,17 +33,37 @@ eureka:
   instance:
     instance-id: microservice-user-jwt
 
-resilience4j:
-  circuitbreaker:
-    instances:
-      userBreaker:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 5
-        slidingWindowType: COUNT_BASED
-        minimumNumberOfCalls: 10
-        waitDurationInOpenState: 30s
-        failureRateThreshold: 50
-        eventConsumerBufferSize: 10
-        slowCallRateThreshold: 50
-        slowCallDurationThreshold: 5s
+resilience4j.circuitbreaker:
+  instances:
+    userBreaker:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 5
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 30s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      slowCallRateThreshold: 50
+      slowCallDurationThreshold: 5s
+
+resilience4j.ratelimiter:
+  instances:
+    post-delete-patch:
+      limitForPeriod: 30
+      limitRefreshPeriod: 1s
+      timeoutDuration: 500
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 50
+    gets:
+      limitForPeriod: 2000
+      limitRefreshPeriod: 1s
+      timeoutDuration: 500
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
+    jwt:
+      limitForPeriod: 2000
+      limitRefreshPeriod: 1s
+      timeoutDuration: 500
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
