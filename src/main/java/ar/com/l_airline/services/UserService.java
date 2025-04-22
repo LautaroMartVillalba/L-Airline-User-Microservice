@@ -49,11 +49,14 @@ public class UserService {
             throw new MissingDataException();
         }
 
-        Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
+        synchronized (this){
+            Optional<User> dbUser = repository.findByEmail(userDto.getEmail());
 
-        if (dbUser.isPresent()) {
-            throw new ExistingObjectException();
+            if (dbUser.isPresent()) {
+                throw new ExistingObjectException();
+            }
         }
+
         User user = User.builder().email(userDto.getEmail())
                 .name(userDto.getName())
                 .password(encoder.encode(userDto.getPassword()))
