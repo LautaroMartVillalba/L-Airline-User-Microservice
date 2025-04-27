@@ -1,7 +1,7 @@
 services:
 # # ---------------POSTGRES-----------------
   postgres:
-    image: lautaromvillalba/postgres-custom:v1.1
+    image: lautaromvillalba/postgres-custom:v1
     restart: always
     shm_size: 128mb
     container_name: database
@@ -21,7 +21,7 @@ services:
 
 # ---------------NEO4J-----------------
   neo4j:
-    image: neo4j
+    image: neo4j-custom
     container_name: neo4j
     volumes:
       - neo4j_persist:/data
@@ -58,7 +58,7 @@ services:
 
 # ---------------GATEWAY-----------------
   gateway:
-    image: lautaromvillalba/gateway:1.2
+    image: lautaromvillalba/gateway:v1.2
     container_name: gateway
     ports:
       - "8080:8080"
@@ -78,7 +78,7 @@ services:
 
 # ---------------JWT-USER-----------------
   jwt-user:
-    image: lautaromvillalba/user:v1.1
+    image: lautaromvillalba/user:V1.3
     container_name: jwt-user
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
@@ -88,7 +88,7 @@ services:
 
 # ---------------HOTEL-----------------
   hotel:
-    image: lautaromvillalba/hotel:v1
+    image: lautaromvillalba/hotel:v1.3
     container_name: hotel
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
@@ -98,7 +98,7 @@ services:
 
 # ---------------FLIGHT-----------------
   flight:
-    image: lautaromvillalba/flight:v2.4
+    image: lautaromvillalba/flight:v2.8
     container_name: flight
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
