@@ -21,8 +21,11 @@ services:
 
 # ---------------NEO4J-----------------
   neo4j:
-    image: neo4j-custom
+    image: lautaromvillalba/neo4j-custom:v1
     container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
     volumes:
       - neo4j_persist:/data
     environment:
@@ -98,7 +101,7 @@ services:
 
 # ---------------FLIGHT-----------------
   flight:
-    image: lautaromvillalba/flight:v2.8
+    image: flightprueba
     container_name: flight
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
