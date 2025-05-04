@@ -39,6 +39,8 @@ services:
   vault-custom:
     image: lautaromvillalba/custom-vault
     container_name: vault-custom
+    ports:
+      - "8200:8200"
     environment:
       VAULT_ADDR: http://vault-custom:8200
     volumes:
@@ -101,7 +103,7 @@ services:
 
 # ---------------FLIGHT-----------------
   flight:
-    image: flightprueba
+    image: lautaromvillalba/flight:v2.10
     container_name: flight
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
