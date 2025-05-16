@@ -4,6 +4,8 @@ import ar.com.l_airline.domains.enums.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "entity_user")
 @AllArgsConstructor
@@ -23,6 +25,8 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Roles role;
+    @OneToMany(mappedBy = "user")
+    private List<TokenRefresh> tokens;
 
     private boolean isEnabled;
     private boolean accountNoExpired;

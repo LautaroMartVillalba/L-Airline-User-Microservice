@@ -1,12 +1,14 @@
 package ar.com.l_airline.services;
 
 import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.domains.entities.TokenRefresh;
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.repositories.UserRepository;
 import jakarta.mail.MessagingException;
+import org.antlr.v4.runtime.Token;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,30 @@ public class UserService {
                 && !dto.getRole().name().isBlank()
                 && !dto.getEmail().isBlank()
                 && !dto.getPassword().isBlank();
+    }
+
+    public UserDTO retrieveParser(User user){
+        return UserDTO.builder()
+                       .id(user.getId())
+                       .name(user.getName())
+                       .email(user.getEmail())
+                       .role(user.getRole()).build();
+    }
+
+    public List<UserDTO> retrieveParser(List<User> user){
+        List<UserDTO> retrieve = new ArrayList<>();
+
+        user.forEach(unit -> {
+            UserDTO dto = UserDTO.builder()
+                .id(unit.getId())
+                .name(unit.getName())
+                .email(unit.getEmail())
+                .role(unit.getRole()).build();
+
+            retrieve.add(dto);
+        });
+
+        return retrieve;
     }
 
     /**
@@ -74,11 +100,7 @@ public class UserService {
             throw new RuntimeException(e);
         }
 
-        return UserDTO.builder()
-                .id(user.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
-                .role(userDto.getRole()).build();
+        return retrieveParser(user);
     }
 
     /**
@@ -88,33 +110,27 @@ public class UserService {
      * @return User info if exist any matching in the DataBase. Empty optional if id number is null.
      * @throws RuntimeException if it can't found one matching in the DataBase.
      */
-    public Optional<UserDTO> findUserById(Long id) {
+    public UserDTO findUserById(Long id) {
         if (id == null) {
             throw new MissingDataException();
         }
         User result = repository.findById(id).orElseThrow(NotFoundException::new);
 
-        return Optional.ofNullable(UserDTO.builder()
-                .id(result.getId())
-                .name(result.getName())
-                .email(result.getEmail())
-                .role(result.getRole()).build());
+        return retrieveParser(result);
     }
 
     /**
      * Search and delete (if exists one matcher) one record in the DataBase.
      *
      * @param id Identification number.
-     * @return False if it can't found one record in the DataBase. True if it can found and delete.
      */
-    public boolean deleteUserById(Long id) {
+    public void deleteUserById(Long id) {
         if (id == null) {
             throw new MissingDataException();
         }
         User result = repository.findById(id).orElseThrow(NotFoundException::new);
 
         repository.deleteById(result.getId());
-        return true;
     }
 
     /**
@@ -132,14 +148,7 @@ public class UserService {
             throw new NotFoundException();
         }
 
-        List<UserDTO> dtoTransfer = new ArrayList<>();
-        result.forEach(user -> dtoTransfer.add(UserDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole()).build()));
-
-        return dtoTransfer;
+        return retrieveParser(result);
     }
 
     /**
@@ -159,18 +168,12 @@ public class UserService {
             throw new NotFoundException();
         }
 
-        List<UserDTO> daoTransfer = new ArrayList<>();
-        result.forEach(user -> daoTransfer.add(UserDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole()).build()));
-
-        return daoTransfer;
+        return retrieveParser(result);
     }
 
     /**
      * Search one User in the DataBase by his email.
+     * This is an internal method.
      *
      * @param email User email.
      * @return Optional of User Data Access Object if it can found one record in the DataBase. Empty optional if not.
@@ -196,7 +199,7 @@ public class UserService {
      * @param dto User data to change and persist.
      * @return User Data Access Object with the changes.
      */
-    public User updateUser(Long id, UserDTO dto) {
+    public UserDTO updateUser(Long id, UserDTO dto) {
         User findUser = repository.findById(id).orElseThrow(NotFoundException::new);
 
         if (dto.getName() != null) {
@@ -211,12 +214,14 @@ public class UserService {
         if (dto.getRole() != null) {
             findUser.setRole(dto.getRole());
         }
+        if (!dto.getTokens().isEmpty()){
+            dto.getTokens().forEach(token -> {
+                List<TokenRefresh> list = findUser.getTokens();
+                list.add(token);
+            });
+        }
 
         repository.save(findUser);
-        return User.builder()
-                .id(findUser.getId())
-                .name(findUser.getName())
-                .email(findUser.getEmail())
-                .role(findUser.getRole()).build();
+        return retrieveParser(findUser);
     }
 }
