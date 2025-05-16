@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/user")
@@ -27,7 +26,7 @@ public class UserController {
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
     @RateLimiter(name = "get")
     @GetMapping("/byId")
-    public ResponseEntity<Optional<UserDTO>> findByID(@RequestParam Long id) {
+    public ResponseEntity<UserDTO> findByID(@RequestParam Long id) {
             return ResponseEntity.ok(service.findUserById(id));
     }
 
@@ -63,7 +62,7 @@ public class UserController {
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
     @RateLimiter(name = "post-delete-patch")
     @PatchMapping("/updateInfo")
-    public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserDTO dto) {
+    public ResponseEntity<UserDTO> updateUser(@RequestParam Long id, @RequestBody UserDTO dto) {
         return ResponseEntity.ok(service.updateUser(id, dto));
     }
 
