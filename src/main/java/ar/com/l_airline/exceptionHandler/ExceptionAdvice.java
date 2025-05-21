@@ -1,9 +1,6 @@
 package ar.com.l_airline.exceptionHandler;
 
-import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.*;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
@@ -78,6 +75,15 @@ public class ExceptionAdvice {
                 .message("Something's bad with the email sender.").build();
 
         log.error("An error has occurred during message sending process.");
+
+        return new ResponseEntity<>(dto, dto.getCode());
+    }
+
+    @ExceptionHandler(value = DebugException.class)
+    public ResponseEntity<ExceptionDTO> debugExceptionExcHandler() {
+        ExceptionDTO dto = ExceptionDTO.builder()
+                .code(HttpStatusCode.valueOf(404))
+                .message("Error en la ejecución").build();
 
         return new ResponseEntity<>(dto, dto.getCode());
     }
