@@ -23,7 +23,7 @@ public class TokenRefreshController {
     @PostMapping("/recreate")
     public ResponseEntity<String> crear(@RequestParam String token, @RequestParam String email){
         String newToken = jwtService.createToken(email);
-        service.createToken(newToken, email);
+        service.createToken(newToken, token, email);
         return ResponseEntity.ok(newToken);
     }
 

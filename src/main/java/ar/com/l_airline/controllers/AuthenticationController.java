@@ -1,10 +1,8 @@
 package ar.com.l_airline.controllers;
 
-import ar.com.l_airline.exceptionHandler.custom_exceptions.AccessDeniedException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
-import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.*;
 import ar.com.l_airline.services.JwtService;
+import ar.com.l_airline.services.TokenService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.SneakyThrows;
@@ -27,6 +25,8 @@ public class AuthenticationController {
     private JwtService jwtService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenService tokenService;
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
     @RateLimiter(name = "jwt")
@@ -38,7 +38,9 @@ public class AuthenticationController {
         if (!authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(jwtService.createToken(email));
+        String token = jwtService.createToken(email);
+        tokenService.createToken(token, null,email);
+        return ResponseEntity.ok(token);
     }
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
@@ -66,6 +68,9 @@ public class AuthenticationController {
         }
         if (e instanceof MissingDataException) {
             throw new MissingDataException();
+        }
+        if (e instanceof DebugException) {
+            throw new DebugException();
         }
 
         return new ResponseEntity<>("An error has occurred in our services servers. Please, try again later.", HttpStatusCode.valueOf(503));
