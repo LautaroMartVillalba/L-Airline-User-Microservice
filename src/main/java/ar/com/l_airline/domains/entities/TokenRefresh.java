@@ -17,16 +17,19 @@ import java.time.LocalDateTime;
 public class TokenRefresh {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String token;
     @Column(name = "create_at")
     private LocalDateTime createDate;
-    @Column(unique = true)
     private String email;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    private boolean available;
+    private boolean revoked;
+    @Column(name = "original_token")
+    private boolean originalToken;
 
 }

@@ -1,8 +1,8 @@
 package ar.com.l_airline.services;
 
-import ar.com.l_airline.domains.dto.UserDTO;
 import ar.com.l_airline.domains.entities.TokenRefresh;
 import ar.com.l_airline.domains.entities.User;
+import ar.com.l_airline.exceptionHandler.custom_exceptions.DebugException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.repositories.TokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,16 +18,15 @@ import java.util.Optional;
 @Service
 public class TokenService {
 
-    private TokenRepository repository;
-    private PasswordEncoder encoder;
-    private UserService userService;
+    private final TokenRepository repository;
+    private final PasswordEncoder encoder;
+    private final UserService userService;
 
 
     /**
      * Constructs a new instance of TokenService with required dependencies.
      *
      * @param repository  the token repository used for persistence operations
-     * @param encoder     the password encoder used to securely encode tokens
      * @param userService the user service used to manage user-related actions
      */
     public TokenService(TokenRepository repository, PasswordEncoder encoder, UserService userService) {
@@ -41,23 +40,45 @@ public class TokenService {
      * The token is encoded for security and linked to the user retrieved by email.
      * Additionally, it updates the user with the new token before saving it to the database.
      *
-     * @param token the raw token string to be encoded and stored
      * @param email the email of the user to associate the token with
      */
-    public void createToken(String token, String email){
+    public void createToken(String newToken, String oldToken, String email){
+//        if (!this.validToken(token, email)){
+//            throw new DebugException();
+//        }
 
         User user = userService.findUserByEmail(email);
 
-        TokenRefresh dto = TokenRefresh.builder()
-                .token(encoder.encode(token))
+        TokenRefresh tokenToDB = TokenRefresh.builder()
+                .token(newToken)
                 .email(email)
                 .createDate(LocalDateTime.now())
-                .user(user).build();
+                .user(user)
+                .available(true)
+                .revoked(false)
+                .originalToken(true)
+                .build();
 
-        UserDTO userDTO = UserDTO.builder().tokens(List.of(dto)).build();
-        userService.updateUser(user.getId(), userDTO);
+        Optional<TokenRefresh> originalToken = repository.findByEmailAndOriginalTokenTrue(email);
+        originalToken.ifPresent(tokenRefresh -> {
+            tokenRefresh.setAvailable(false);
+            tokenRefresh.setRevoked(true);
+            repository.save(tokenRefresh);
+            tokenToDB.setOriginalToken(false);
+        });
 
-        repository.save(dto);
+        if(oldToken != null) {
+            Optional<TokenRefresh> actualToken = repository.findByToken(oldToken);
+            actualToken.ifPresent(actual -> {
+                Optional<TokenRefresh> toDeleteToken = repository.findByEmailAndAvailableFalseAndRevokedTrueAndOriginalTokenFalse(email);
+                toDeleteToken.ifPresent(repository::delete);
+                actual.setAvailable(false);
+                actual.setRevoked(true);
+                repository.save(actual);
+            });
+        }
+
+        repository.save(tokenToDB);
     }
 
     /**
@@ -68,12 +89,28 @@ public class TokenService {
      * @return an Optional containing the token if found, or empty otherwise
      * @throws MissingDataException if the provided email is empty
      */
-    public Optional<TokenRefresh> findByEmail(String email){
+    public List<TokenRefresh> findByEmail(String email){
         if (email.isEmpty()){
             throw new MissingDataException();
         }
 
         return repository.findByEmail(email);
+    }
+
+    public boolean validToken(String token, String email){
+        Optional<TokenRefresh> tokenInDB = repository.findByToken(token);
+        Optional<TokenRefresh> originalToken = repository.findByEmailAndOriginalTokenTrue(email);
+
+        if (tokenInDB.isPresent() && !tokenInDB.get().isAvailable() || tokenInDB.isPresent() && tokenInDB.get().isRevoked()){
+            return false;
+        }
+
+        if (originalToken.isPresent()){
+            if (!originalToken.get().getCreateDate().plusMinutes(20).isBefore(LocalDateTime.now())){
+                return false;
+            }
+        }
+        return true;
     }
 
 
