@@ -4,14 +4,17 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
       ddl-auto: none
   datasource:
+#    url: jdbc:postgresql://localhost:5431/airline
     url: jdbc:postgresql://database:5432/airline
     driver-class-name: org.postgresql.Driver
   application:
     name: microservice-user-jwt
   cloud:
     vault:
+#      host: localhost
       host: vault-custom
       port: 8200
       scheme: http

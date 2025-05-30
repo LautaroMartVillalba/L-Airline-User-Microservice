@@ -4,6 +4,8 @@ services:
     image: lautaromvillalba/postgres-custom:v1
     restart: always
     shm_size: 128mb
+    ports:
+      - "5431:5432"
     container_name: database
     volumes:
       - postgres_persist:/var/lib/postgresql/data
@@ -63,7 +65,7 @@ services:
 
 # ---------------GATEWAY-----------------
   gateway:
-    image: lautaromvillalba/gateway:v1.2
+    image: lautaromvillalba/gateway:v2.0
     container_name: gateway
     ports:
       - "8080:8080"
@@ -83,7 +85,7 @@ services:
 
 # ---------------JWT-USER-----------------
   jwt-user:
-    image: lautaromvillalba/user:V1.3
+    image: lautaromvillalba/user:v2.0
     container_name: jwt-user
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
@@ -118,3 +120,4 @@ volumes:
 
 networks:
   airline_net:
+

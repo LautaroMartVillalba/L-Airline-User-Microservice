@@ -1,8 +1,9 @@
 package ar.com.l_airline.controllers;
 
+import ar.com.l_airline.domains.dto.UserDTO;
+import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.*;
-import ar.com.l_airline.services.JwtService;
-import ar.com.l_airline.services.TokenService;
+import ar.com.l_airline.services.UserService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.SneakyThrows;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,38 +24,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthenticationController {
 
     @Autowired
-    private JwtService jwtService;
-    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private TokenService tokenService;
+    private UserService userService;
 
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
     @RateLimiter(name = "jwt")
-    @PostMapping("/token")
-    public ResponseEntity<String> getToken(@RequestParam String email, @RequestParam String password) {
+    @GetMapping("/prueba")
+    public ResponseEntity<UserDTO> obtenerDatos(@RequestParam String email, @RequestParam String password){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password));
 
         if (!authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().build();
         }
-        String token = jwtService.createToken(email);
-        tokenService.createToken(token, null,email);
-        return ResponseEntity.ok(token);
-    }
+        User user = userService.findUserByEmail(email);
 
-    @CircuitBreaker(name = "userBreaker", fallbackMethod = "fallback")
-    @PostMapping("/validate")
-    @RateLimiter(name = "jwt")
-    @SneakyThrows
-    public ResponseEntity<String> validateToken(@RequestParam String token) {
-        try {
-            jwtService.validateToken(token);
-        } catch (AccessDeniedException e) {
-            throw new AccessDeniedException();
-        }
-        return ResponseEntity.ok("Nice!");
+        UserDTO dto = UserDTO.builder()
+                .role(user.getRole())
+                .email(user.getEmail())
+                .build();
+        return ResponseEntity.ok(dto);
     }
 
     private ResponseEntity<String> fallback(Exception e){

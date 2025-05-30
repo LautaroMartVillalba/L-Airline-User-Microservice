@@ -1,14 +1,12 @@
 package ar.com.l_airline.services;
 
 import ar.com.l_airline.domains.dto.UserDTO;
-import ar.com.l_airline.domains.entities.TokenRefresh;
 import ar.com.l_airline.domains.entities.User;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.ExistingObjectException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.MissingDataException;
 import ar.com.l_airline.exceptionHandler.custom_exceptions.NotFoundException;
 import ar.com.l_airline.repositories.UserRepository;
 import jakarta.mail.MessagingException;
-import org.antlr.v4.runtime.Token;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -213,12 +211,6 @@ public class UserService {
         }
         if (dto.getRole() != null) {
             findUser.setRole(dto.getRole());
-        }
-        if (!dto.getTokens().isEmpty()){
-            dto.getTokens().forEach(token -> {
-                List<TokenRefresh> list = findUser.getTokens();
-                list.add(token);
-            });
         }
 
         repository.save(findUser);

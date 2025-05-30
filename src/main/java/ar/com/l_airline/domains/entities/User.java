@@ -25,8 +25,6 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Roles role;
-    @OneToMany(mappedBy = "user")
-    private List<TokenRefresh> tokens;
 
     private boolean isEnabled;
     private boolean accountNoExpired;
